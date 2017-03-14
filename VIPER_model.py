@@ -19,6 +19,7 @@ def xldata(dat):
     longshift = dat.parse('longshift')
     shortshift = dat.parse('shortshift')
     restricted = dat.parse('restricted')
+    print("< < < Input data imported > > >")
     
 # Validate imput data (including keys, data types)
 def validate_input(dat):
