@@ -8,19 +8,7 @@
 from pandas import ExcelFile
 from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpInteger, LpBinary, LpStatus, value
 
-# Parse input data
-def xldata(dat):
-    settings = dat.parse('settings')
-    members = dat.parse('members')
-    days = dat.parse('days')
-    shifts = dat.parse('shifts')
-    shiftdates = dat.parse('shiftdates')
-    carryover = dat.parse('carryover')
-    longshift = dat.parse('longshift')
-    shortshift = dat.parse('shortshift')
-    restricted = dat.parse('restricted')
-    
-# Parse and validate input data (including keys, data types)
+# Validate input data (including keys, data types)
 def validate_input(dat):
     rtn = {}
     
@@ -38,8 +26,18 @@ def validate_input(dat):
     
     return rtn
     
-# Define solve function that formulates and solves the model
 def solve(dat):
+
+    # Parse input data
+    settings = dat.parse('settings')
+    members = dat.parse('members')
+    days = dat.parse('days')
+    shifts = dat.parse('shifts')
+    shiftdates = dat.parse('shiftdates')
+    carryover = dat.parse('carryover')
+    longshift = dat.parse('longshift')
+    shortshift = dat.parse('shortshift')
+    restricted = dat.parse('restricted')
 
     # Commence model definition
     model = Model("roster")
