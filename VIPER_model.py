@@ -33,6 +33,8 @@ def validate_input(dat):
         rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
     elif dat.parse('settings')['nbr_roster_weeks']['value'] % 1 <> 0:
         rtn["Test 0 - Setting / Weeks"] = 'value not integer'
+    else
+        print('Test 0 - Setting / Weeks: Passed')
     
     return rtn
     
