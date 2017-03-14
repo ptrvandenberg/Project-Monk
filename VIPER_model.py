@@ -8,19 +8,8 @@
 from pandas import ExcelFile
 from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpInteger, LpBinary, LpStatus, value
 
-# Define the input schema
-
-# Foreign keys on input schema
-
-# Set data types of input schema
-
-# Define the output schema
-
-# Define solve function that formulates and solves the model
-def solve(dat):
-
-    print("< < < Importing input data > > >")
-    
+# Import input data
+def xldata(dat):
     settings = dat.parse('settings')
     members = dat.parse('members')
     days = dat.parse('days')
@@ -31,10 +20,25 @@ def solve(dat):
     shortshift = dat.parse('shortshift')
     restricted = dat.parse('restricted')
     
-    print("< < < Testing input data > > >")
+# Validate imput data (including keys, data types)
+def validate_input(dat):
+    rtn = {}
     
-    print("< < < Input data testing completed, formulating model > > >")
+    # Input test 0: Settings
+
+    # nbr_roster_weeks
+    if 'nbr_roster_weeks' not in (param for param in dat.settings):
+        rtn['Test 0 - Setting / Weeks']='parameter missing'
+    elif dat.settings['nbr_roster_weeks']['value'] <= 0:
+        rtn['Test 0 - Setting / Weeks]='value <= 0'
+    elif dat.settings['nbr_roster_weeks']['value'] % 1 <> 0:
+        rtn["Test 0 - Setting / Weeks"].append('value not integer')
     
+    return rtn
+    
+# Define solve function that formulates and solves the model
+def solve(dat):
+
     # Commence model definition
     model = Model("roster")
     
