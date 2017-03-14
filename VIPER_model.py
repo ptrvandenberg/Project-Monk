@@ -28,11 +28,11 @@ def validate_input(dat):
 
     # nbr_roster_weeks
     if 'nbr_roster_weeks' not in (param for param in dat.settings):
-        rtn['Test 0 - Setting / Weeks']='parameter missing'
+        rtn['Test 0 - Setting / Weeks'] = "parameter missing"
     elif dat.settings['nbr_roster_weeks']['value'] <= 0:
-        rtn['Test 0 - Setting / Weeks]='value <= 0'
+        rtn['Test 0 - Setting / Weeks] = "value <= 0"
     elif dat.settings['nbr_roster_weeks']['value'] % 1 <> 0:
-        rtn["Test 0 - Setting / Weeks"].append('value not integer')
+        rtn["Test 0 - Setting / Weeks"] = "value not integer"
     
     return rtn
     
