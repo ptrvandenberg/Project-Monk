@@ -8,8 +8,6 @@
 from pandas import ExcelFile
 from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpInteger, LpBinary, LpStatus, value
 
-settings = dat.parse('settings')
-
 # Parse input data
 def xldata(dat):
     settings = dat.parse('settings')
@@ -29,11 +27,11 @@ def validate_input(dat):
     # Input test 0: Settings
 
     # nbr_roster_weeks
-    if 'nbr_roster_weeks' not in (param for param in settings):
+    if 'nbr_roster_weeks' not in (param for param in dat.parse('settings')):
         rtn['Test 0 - Setting / Weeks'] = 'parameter missing'
-    elif dat.settings['nbr_roster_weeks']['value'] <= 0:
+    elif dat.parse('settings')['nbr_roster_weeks']['value'] <= 0:
         rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
-    elif dat.settings['nbr_roster_weeks']['value'] % 1 <> 0:
+    elif dat.parse('settings')['nbr_roster_weeks']['value'] % 1 <> 0:
         rtn["Test 0 - Setting / Weeks"] = 'value not integer'
     
     return rtn
