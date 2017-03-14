@@ -8,7 +8,9 @@
 from pandas import ExcelFile
 from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpInteger, LpBinary, LpStatus, value
 
-# Import input data
+settings = dat.parse('settings')
+
+# Parse input data
 def xldata(dat):
     settings = dat.parse('settings')
     members = dat.parse('members')
@@ -19,16 +21,15 @@ def xldata(dat):
     longshift = dat.parse('longshift')
     shortshift = dat.parse('shortshift')
     restricted = dat.parse('restricted')
-    print("< < < Input data imported > > >")
     
-# Validate imput data (including keys, data types)
+# Parse and validate input data (including keys, data types)
 def validate_input(dat):
     rtn = {}
     
     # Input test 0: Settings
 
     # nbr_roster_weeks
-    if 'nbr_roster_weeks' not in (param for param in dat.settings):
+    if 'nbr_roster_weeks' not in (param for param in settings):
         rtn['Test 0 - Setting / Weeks'] = 'parameter missing'
     elif dat.settings['nbr_roster_weeks']['value'] <= 0:
         rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
