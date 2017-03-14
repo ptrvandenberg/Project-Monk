@@ -1,8 +1,12 @@
 # VIPER: VIctoria Police Electronic Rostering
 # Copyright 2017, Peter van den Berg
+
+# Project Monk: SOCAU Fawkner
 # This file implements a function [solve] that formulates and solves the model as well as codifies the resulting roster
 
 # Import dependencies
+from pandas import ExcelFile
+from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpInteger, LpBinary, LpStatus, value
 
 # Define the input schema
 
@@ -15,6 +19,18 @@
 # Define solve function that formulates and solves the model
 def solve(dat):
 
+    print("< < < Importing input data > > >")
+    
+    settings = dat.parse('settings')
+    members = dat.parse('members')
+    days = dat.parse('days')
+    shifts = dat.parse('shifts')
+    shiftdates = dat.parse('shiftdates')
+    carryover = dat.parse('carryover')
+    longshift = dat.parse('longshift')
+    shortshift = dat.parse('shortshift')
+    restricted = dat.parse('restricted')
+    
     print("< < < Testing input data > > >")
     
     print("< < < Input data testing completed, formulating model > > >")
