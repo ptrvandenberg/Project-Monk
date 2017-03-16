@@ -79,7 +79,8 @@ def solve(dat):
     # Create and define the additional variables
     
     # Set the objective
-    model += sum([x[m,d,s] for m,d,s in members, days, shifts])
+    mds = [(m,d,s) for m in members for d in days for s in shifts]
+    model += sum([x[m][d][s] for (m,d,s) in mds])
     
     # STRUCTURAL CONSTRAINTS
 #    model += ...
