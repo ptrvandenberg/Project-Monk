@@ -103,7 +103,7 @@ def solve(dat):
     
     # Solve
     print("< < < Model formulated, commencing optimisation > > >")
-#    model.optimize()
+    model.solve()
     
 #    if model.status <> GRB.status.OPTIMAL:
 #        print("< < < Optimisation completed, infeasible > > >")
