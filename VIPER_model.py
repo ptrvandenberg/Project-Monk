@@ -105,6 +105,9 @@ def solve(dat):
     print("< < < Model formulated, commencing optimisation > > >")
     model.solve()
     
+    print("Status:", LpStatus[model.status])
+    print("Value = ", value(model.objective))
+    
 #    if model.status <> GRB.status.OPTIMAL:
 #        print("< < < Optimisation completed, infeasible > > >")
 #    else:
