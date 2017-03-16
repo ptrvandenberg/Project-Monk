@@ -35,7 +35,7 @@ def validate_input():
 #        rtn["Test 0 - Setting / Weeks"] = 'value not integer'
 
     # nbr_roster_weeks
-    if 'nbr_roster_weeks' not in (param for param in settings)['parameter']:
+    if 'nbr_roster_weeks' not in (param for param in settings['parameter']):
         rtn['Test 0 - Setting / Weeks'] = 'parameter missing'
 #    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] <= 0:
 #        rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
@@ -47,8 +47,11 @@ def validate_input():
 def solve(dat):
 
     parse_input(dat)
-    invalid_input = validate_input()
-    assert not invalid_input, invalid_input
+#    invalid_input = validate_input()
+#    assert not invalid_input, invalid_input
+    
+    for m in members:
+        print(
     
     # Commence model definition
     model = Model("roster")
