@@ -50,9 +50,6 @@ def solve(dat):
 #    invalid_input = validate_input()
 #    assert not invalid_input, invalid_input
     
-    for m in members:
-        print(
-    
     # Commence model definition
     model = Model("roster")
     
