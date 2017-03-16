@@ -44,15 +44,15 @@ def solve(dat):
     model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
-    LpVariable("", lowBound=, upBound=, cat=)
+    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
     
     # Create and define the additional variables
     
     # Set the objective
-    model += ...
+#    model += ...
     
     # STRUCTURAL CONSTRAINTS
-    model += ...
+#    model += ...
     
     # INPUT CONSTRAINTS
     
@@ -72,13 +72,13 @@ def solve(dat):
     
     # Solve
     print("< < < Model formulated, commencing optimisation > > >")
-    model.optimize()
+#    model.optimize()
     
-    if model.status <> GRB.status.OPTIMAL:
-        print("< < < Optimisation completed, infeasible > > >")
-    else:
-        print("< < < Optimisation completed, codifying roster > > >")
+#    if model.status <> GRB.status.OPTIMAL:
+#        print("< < < Optimisation completed, infeasible > > >")
+#    else:
+#        print("< < < Optimisation completed, codifying roster > > >")
     
-    sln = freeze_me(sln)
-    print("< < < Roster codifying completed, finished > > >")
-    return sln
+#    sln = freeze_me(sln)
+#    print("< < < Roster codifying completed, finished > > >")
+#    return sln
