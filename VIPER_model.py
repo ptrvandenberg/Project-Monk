@@ -8,8 +8,28 @@
 from pandas import ExcelFile
 from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpInteger, LpBinary, LpStatus, value
 
-# Parse input data
-def parse_input(dat):
+# Validate input data (including keys, data types)
+def validate_input(dat):
+    rtn = {}
+    
+    # Input test 0: Settings
+
+    # nbr_roster_weeks
+    if 'nbr_roster_weeks' not in (param for param in dat.parse('settings')['parameter']):
+        rtn['Test 0 - Setting / Weeks'] = 'parameter missing'
+    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] <= 0:
+        rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
+    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] % 1 <> 0:
+        rtn["Test 0 - Setting / Weeks"] = 'value not integer'
+        
+    return rtn
+    
+def solve(dat):
+
+    invalid_input = validate_input(dat)
+    assert not invalid_input, invalid_input
+
+    # Parse input data
     settings = dat.parse('settings')
     members = dat.parse('members')
     days = dat.parse('days')
@@ -19,36 +39,6 @@ def parse_input(dat):
     longshift = dat.parse('longshift')
     shortshift = dat.parse('shortshift')
     restricted = dat.parse('restricted')
-
-# Validate input data (including keys, data types)
-def validate_input(settings):
-    rtn = {}
-    
-    # Input test 0: Settings
-
-    # nbr_roster_weeks
-#    if 'nbr_roster_weeks' not in (param for param in dat.parse('settings')['parameter']):
-#        rtn['Test 0 - Setting / Weeks'] = 'parameter missing'
-#    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] <= 0:
-#        rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
-#    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] % 1 <> 0:
-#        rtn["Test 0 - Setting / Weeks"] = 'value not integer'
-
-    # nbr_roster_weeks
-    if 'nbr_roster_weeks' not in (param for param in settings['parameter']):
-        rtn['Test 0 - Setting / Weeks'] = 'parameter missing'
-#    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] <= 0:
-#        rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
-#    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] % 1 <> 0:
-#        rtn["Test 0 - Setting / Weeks"] = 'value not integer'
-        
-    return rtn
-    
-def solve(dat):
-
-    parse_input(dat)
-    invalid_input = validate_input(settings)
-    assert not invalid_input, invalid_input
     
     # Commence model definition
     model = Model("roster")
