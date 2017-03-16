@@ -31,19 +31,43 @@ def solve(dat):
 
     # Parse input data
     settings = dat.parse('settings')
+    settings = settings.set_index('parameter')
+    
     members = dat.parse('members')
+    members = members.set_index('memid')
+
     days = dat.parse('days')
+    days = days.set_index('dayseq')
+    
     shifts = dat.parse('shifts')
+    shifts = shifts.set_index('shiftcd')
+    
     shiftdates = dat.parse('shiftdates')
+    shiftdates = shiftdates.set_index('shiftcd')
+    
     carryover = dat.parse('carryover')
+    carryover = carryover.set_index('memid')
+
     longshift = dat.parse('longshift')
+    longshift = longshift.set_index(['memid','week'])
+    
     shortshift = dat.parse('shortshift')
+    shortshift = shortshift.set_index('memid')
+
     restricted = dat.parse('restricted')
+    restricted = restricted.set_index(['memid','dayseq','shiftcd'])
     
     # Commence model definition and set optimisation direction
     model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
+    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
+    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
+    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
+    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
+    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
+    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
+    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
     x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
     
     # Create and define the additional variables
