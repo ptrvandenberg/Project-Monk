@@ -21,21 +21,27 @@ def parse_input(dat):
     restricted = dat.parse('restricted')
 
 # Validate input data (including keys, data types)
-def validate_input(dat):
+def validate_input():
     rtn = {}
     
     # Input test 0: Settings
 
     # nbr_roster_weeks
-    if 'nbr_roster_weeks' not in (param for param in dat.parse('settings')['parameter']):
+#    if 'nbr_roster_weeks' not in (param for param in dat.parse('settings')['parameter']):
+#        rtn['Test 0 - Setting / Weeks'] = 'parameter missing'
+#    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] <= 0:
+#        rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
+#    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] % 1 <> 0:
+#        rtn["Test 0 - Setting / Weeks"] = 'value not integer'
+
+    # nbr_roster_weeks
+    if 'nbr_roster_weeks' not in (param for param in settings)['parameter']:
         rtn['Test 0 - Setting / Weeks'] = 'parameter missing'
-    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] <= 0:
-        rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
-    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] % 1 <> 0:
-        rtn["Test 0 - Setting / Weeks"] = 'value not integer'
-    else:
-        print('Test 0 - Setting / Weeks: Passed')
-    
+#    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] <= 0:
+#        rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
+#    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] % 1 <> 0:
+#        rtn["Test 0 - Setting / Weeks"] = 'value not integer'
+        
     return rtn
     
 def solve(dat):
