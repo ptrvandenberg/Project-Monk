@@ -40,23 +40,19 @@ def solve(dat):
     shortshift = dat.parse('shortshift')
     restricted = dat.parse('restricted')
     
-    # Commence model definition
-    model = Model("roster")
+    # Commence model definition and set optimisation direction
+    model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
+    LpVariable("", lowBound=, upBound=, cat=)
     
     # Create and define the additional variables
     
     # Set the objective
-    
-    # Set optimisation direction
-    
-    # Update model to integrate new variables
-    model.update()
+    model += ...
     
     # STRUCTURAL CONSTRAINTS
-    
-    # Structure of defined problem variables
+    model += ...
     
     # INPUT CONSTRAINTS
     
