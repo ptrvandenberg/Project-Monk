@@ -61,12 +61,25 @@ def solve(dat):
     model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
-    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
+    x = LpVariable.dicts("roster_%s_%s_%s", (members, days, shifts), 0, 1, LpBinary)
+#    x_mg = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_am1 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_am2 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_am3 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_pm1 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_pm2 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_ng = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_oc = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_oe = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_or = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_xl = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_xp = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
+#    x_xr = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
     
     # Create and define the additional variables
     
     # Set the objective
-#    model += ...
+    model += sum([x[m,d,s] for m,d,s in members, days, shifts])
     
     # STRUCTURAL CONSTRAINTS
 #    model += ...
