@@ -42,7 +42,7 @@ def solve(dat):
 
     parse_input(dat)
     invalid_input = validate_input(dat)
-    assert not invalid_input
+    assert not invalid_input, invalid_input
     
     # Commence model definition
     model = Model("roster")
