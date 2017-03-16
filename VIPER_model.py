@@ -62,13 +62,6 @@ def solve(dat):
     
     # Create and define the problem variables
     x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
-    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
-    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
-    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
-    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
-    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
-    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
-    x = LpVariable.dicts("rostered", (members, days), 0, 1, LpBinary)
     
     # Create and define the additional variables
     
