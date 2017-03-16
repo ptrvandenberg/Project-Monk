@@ -9,7 +9,7 @@ from pandas import ExcelFile
 from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpInteger, LpBinary, LpStatus, value
 
 # Parse input data
-def parse_input(dat)
+def parse_input(dat):
     settings = dat.parse('settings')
     members = dat.parse('members')
     days = dat.parse('days')
