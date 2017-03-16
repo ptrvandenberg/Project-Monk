@@ -21,7 +21,7 @@ def parse_input(dat):
     restricted = dat.parse('restricted')
 
 # Validate input data (including keys, data types)
-def validate_input():
+def validate_input(settings):
     rtn = {}
     
     # Input test 0: Settings
@@ -47,8 +47,8 @@ def validate_input():
 def solve(dat):
 
     parse_input(dat)
-#    invalid_input = validate_input()
-#    assert not invalid_input, invalid_input
+    invalid_input = validate_input(settings)
+    assert not invalid_input, invalid_input
     
     # Commence model definition
     model = Model("roster")
