@@ -108,6 +108,8 @@ def solve(dat):
     print("Status:", LpStatus[model.status])
     print("Value = ", value(model.objective))
     
+    model.writeLP("Project_Monk.lp")
+    
 #    if model.status <> GRB.status.OPTIMAL:
 #        print("< < < Optimisation completed, infeasible > > >")
 #    else:
