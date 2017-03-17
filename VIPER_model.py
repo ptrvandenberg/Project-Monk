@@ -61,7 +61,7 @@ def solve(dat):
     model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
-    x = LpVariable.dicts("roster_%s_%s_%s", (members, days, shifts), 0, 1, LpBinary)
+    x = LpVariable.dicts("roster_%s_%s_%s", (members.index, days.index, shifts.index), 0, 1, LpBinary)
 #    x_mg = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
 #    x_am1 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
 #    x_am2 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
@@ -79,7 +79,7 @@ def solve(dat):
     # Create and define the additional variables
     
     # Set the objective
-    mds = [(m,d,s) for m in members for d in days for s in shifts]
+    mds = [(m,d,s) for m in members.index for d in days.index for s in shifts.index]
     model += sum([x[m][d][s] for (m,d,s) in mds])
     
     # STRUCTURAL CONSTRAINTS
