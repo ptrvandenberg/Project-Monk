@@ -30,31 +30,15 @@ def solve(dat):
     assert not invalid_input, invalid_input
 
     # Parse input data
-    settings = dat.parse('settings')
-    settings = settings.set_index('parameter')
-    
+    settings = dat.parse('settings', index_col = 'parameter')
     members = dat.parse('members')
-
-    days = dat.parse('days')
-    days = days.set_index('dayseq')
-    
-    shifts = dat.parse('shifts')
-    shifts = shifts.set_index('shiftcd')
-    
-    shiftdates = dat.parse('shiftdates')
-    shiftdates = shiftdates.set_index('shiftcd')
-    
-    carryover = dat.parse('carryover')
-    carryover = carryover.set_index('memid')
-
-    longshift = dat.parse('longshift')
-    longshift = longshift.set_index(['memid','week'])
-    
-    shortshift = dat.parse('shortshift')
-    shortshift = shortshift.set_index('memid')
-
-    restricted = dat.parse('restricted')
-    restricted = restricted.set_index(['memid','dayseq','shiftcd'])
+    days = dat.parse('days', index_col = 'dayseq')
+    shifts = dat.parse('shifts', index_col = 'shiftcd')    
+    shiftdates = dat.parse('shiftdates', index_col = 'shiftcd')
+    carryover = dat.parse('carryover', index_col = 'memid')
+    longshift = dat.parse('longshift', index_col = ['memid','week'])
+    shortshift = dat.parse('shortshift', index_col = 'memid')
+    restricted = dat.parse('restricted', index_col = ['memid','dayseq','shiftcd'])
     
     # Commence model definition and set optimisation direction
     model = LpProblem("roster", LpMaximize)
@@ -79,15 +63,19 @@ def solve(dat):
     
     # Set the objective
     mds = [(m,d,s) for m in members.index for d in days.index for s in shifts.index]
-    model += sum([x[m][d][s] for (m,d,s) in mds])
+    model += lpSum([x[m][d][s] for (m,d,s) in mds])
     
     # STRUCTURAL CONSTRAINTS
 
-    # Each member on each day has to be assigned to one and only one shift
+    # Each member on each day has to be assigned to one and only one shift (including part-time, rest and leave)
     for m in members.index:
         for d in days.index:
-            model += sum([x[m][d][s] for s in shifts.index]) == 1
-    
+            model += lpSum([x[m][d][s] for s in shifts.index]) == 1
+
+    # Each member needs to be assigned to 5*FTE*weeks shifts (excluding part-time and rest)
+    for m in members.index:
+        model += lpSum([x[m][d][s] for d in days.index s in shifts.index if s.ix['value'] <> "XP" and s <> "XP"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members['fte']
+        
     # INPUT CONSTRAINTS
     
     # Assign shifts based on the Committed input
