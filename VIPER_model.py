@@ -36,9 +36,11 @@ def solve(dat):
     shifts = dat.parse('shifts', index_col = 'shiftcd')    
     shiftdates = dat.parse('shiftdates', index_col = 'shiftcd')
     carryover = dat.parse('carryover', index_col = 'memid')
-    longshift = dat.parse('longshift', index_col = ['memid','week'])
+    longshift = dat.parse('longshift')
+    longshift = longshift.set_index('memid','week')
     shortshift = dat.parse('shortshift', index_col = 'memid')
-    restricted = dat.parse('restricted', index_col = ['memid','dayseq','shiftcd'])
+    restricted = dat.parse('restricted')
+    restricted = restricted.set_index('memid','dayseq','shiftcd')
     
     # Commence model definition and set optimisation direction
     model = LpProblem("roster", LpMaximize)
