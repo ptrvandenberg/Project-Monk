@@ -74,10 +74,6 @@ def solve(dat):
         for d in days.index:
             model += lpSum([x[m][d][s] for s in shifts.index]) == 1
 
-    # Each member needs to be assigned to 5*FTE*weeks shifts (excluding part-time and rest)
-    for m in members.index:
-        model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte']
-        
     # INPUT CONSTRAINTS
     
     # Assign shifts based on the Committed input
@@ -88,6 +84,13 @@ def solve(dat):
     
     # COMPLEX CONSTRAINTS
     
+    # 4 rests days per fortnight unless night shift in previous roster or current roster
+    # ...
+    
+    # Each member needs to be assigned to 5*FTE*weeks shifts (excluding part-time and rest) if not on nightshift
+    for m in members.index:
+        model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte']
+        
     # COMPOUNDED CONSTRAINTS
     
     # STABILITY CONSTRAINTS
