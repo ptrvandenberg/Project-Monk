@@ -82,7 +82,11 @@ def solve(dat):
     model += sum([x[m][d][s] for (m,d,s) in mds])
     
     # STRUCTURAL CONSTRAINTS
-#    model += ...
+
+    # Each member on each day has to be assigned to one and only one shift
+    for m in members.index:
+        for d in days.index:
+            model += sum([x[m][d][s] for s in shifts.index]) == 1
     
     # INPUT CONSTRAINTS
     
