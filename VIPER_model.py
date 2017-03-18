@@ -34,7 +34,6 @@ def solve(dat):
     settings = settings.set_index('parameter')
     
     members = dat.parse('members')
-    members = members.set_index('memid')
 
     days = dat.parse('days')
     days = days.set_index('dayseq')
@@ -61,7 +60,7 @@ def solve(dat):
     model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
-    x = LpVariable.dicts("roster_%s_%s_%s", (members.index, days.index, shifts.index), 0, 1, LpBinary)
+    x = LpVariable.dicts("x_%s_%s_%s", (members.index, days.index, shifts.index), 0, 1, LpBinary)
 #    x_mg = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
 #    x_am1 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
 #    x_am2 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
