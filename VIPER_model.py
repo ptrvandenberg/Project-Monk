@@ -76,8 +76,7 @@ def solve(dat):
 
     # Each member needs to be assigned to 5*FTE*weeks shifts (excluding part-time and rest)
     for m in members.index:
-#        and s.ix['value'] <> "XR"
-        model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte']
+        model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte']
         
     # INPUT CONSTRAINTS
     
