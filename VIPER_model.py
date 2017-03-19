@@ -84,10 +84,12 @@ def solve(dat):
     
     # COMPLEX CONSTRAINTS
     
-    # 4 rests days per fortnight unless night shift in previous roster or current roster
-    # ...
+    # 4 rests days per fortnight unless night shift in previous roster or current roster then 2 carryover (in & out) allowed
+    for m in members.index:
+        if carryover.ix[m,'r0_rests'] == 0:
+            model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte']
     
-    # Each member needs to be assigned to 5*FTE*weeks shifts (excluding part-time and rest) if not on nightshift
+    # Each member needs to be assigned to 5*FTE*weeks-[carryover rest days from previous roster]+[carryover rest days to next roster if on nightshift (max 2)] shifts, excluding part-time and rest
     for m in members.index:
         model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte']
         
