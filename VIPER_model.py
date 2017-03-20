@@ -63,7 +63,7 @@ def solve(dat):
     
     # Create and define the additional variables
 
-    r2_rests = LpVariable.dicts("r2_rests_%s, members.index, 0, 2, LpInteger)
+    r2_rests = LpVariable.dicts("r2_rests_%s", members.index, 0, 2, LpInteger)
     
     # Set the objective
     mds = [(m,d,s) for m in members.index for d in days.index for s in shifts.index]
