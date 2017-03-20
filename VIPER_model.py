@@ -92,7 +92,7 @@ def solve(dat):
     
     # Each member needs to be assigned 2*weeks +/- carryover rests
     for m in members.index:
-        model += lpSum([x[m][d]["XR"] for d in days.index"]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
+        model += lpSum([x[m][d]["XR"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
     
     # COMPOUNDED CONSTRAINTS
     
