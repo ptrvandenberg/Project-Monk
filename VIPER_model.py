@@ -89,7 +89,11 @@ def solve(dat):
     # Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest
     for m in members.index:
         model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte'] - carryover.ix[m,'r0_rests'] + r2_rests[m]
-        
+    
+    # Each member needs to be assigned 2*weeks +/- carryover rests
+    for m in members.index:
+        model += lpSum([x[m][d]["XR"] for d in days.index"]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
+    
     # COMPOUNDED CONSTRAINTS
     
     # STABILITY CONSTRAINTS
