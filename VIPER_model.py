@@ -62,6 +62,8 @@ def solve(dat):
 #    x_xr = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
     
     # Create and define the additional variables
+
+    r2_rests = LpVariable.dicts("r2_rests_%s, members.index, 0, 2, LpInteger)
     
     # Set the objective
     mds = [(m,d,s) for m in members.index for d in days.index for s in shifts.index]
@@ -84,14 +86,9 @@ def solve(dat):
     
     # COMPLEX CONSTRAINTS
     
-    # 4 rests days per fortnight unless night shift in previous roster or current roster then 2 carryover (in & out) allowed
+    # Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest
     for m in members.index:
-        if carryover.ix[m,'r0_rests'] == 0:
-            model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte']
-    
-    # Each member needs to be assigned to 5*FTE*weeks-[carryover rest days from previous roster]+[carryover rest days to next roster if on nightshift (max 2)] shifts, excluding part-time and rest
-    for m in members.index:
-        model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte']
+        model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte'] - carryover.ix[m,'r0_rests'] + r2_rests[m]
         
     # COMPOUNDED CONSTRAINTS
     
