@@ -96,12 +96,16 @@ def solve(dat):
     for m in members.index:
         model += lpSum([x[m][d]["XR"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
     
-    # Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if not
+    # Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if less
     for m in members.index:
         model += r1_night[m] == lpSum([x[m][d]["NG"] for d in days.index])/7
         model += r1_night_bin[m] <= r1_night[m]
         model += r1_night_bin[m] > r1_night[m] - 1
         model += r2_rests[m] <= 2 * r1_night_bin[m]
+    
+    # Each member is assigned one recovery shift following 4+ consecutive night shifts; 0 if less
+    for m in members.index:
+        model += ...
     
     # COMPOUNDED CONSTRAINTS
     
