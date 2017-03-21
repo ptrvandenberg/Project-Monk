@@ -6,7 +6,7 @@
 
 # Import dependencies
 from pandas import ExcelFile
-from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpInteger, LpBinary, LpStatus, value
+from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpContinuous, LpInteger, LpBinary, LpStatus, value
 
 # Validate input data (including keys, data types)
 def validate_input(dat):
@@ -64,7 +64,8 @@ def solve(dat):
     # Create and define the additional variables
 
     r2_rests = LpVariable.dicts("r2_rests_%s", members.index, 0, 2, LpInteger)
-    r1_night = LpVariable.dicts("r1_night_%s", members.index, 0, 1, LpBinary)
+    r1_night = LpVariable.dicts("r1_night_%s", members.index, 0, 1, LpContinuous)
+    r1_night_bin = LpVariable.dicts("r1_night_bin_%s", members.index, 0, 1, LpBinary)
     
     # Set the objective
     mds = [(m,d,s) for m in members.index for d in days.index for s in shifts.index]
@@ -95,10 +96,12 @@ def solve(dat):
     for m in members.index:
         model += lpSum([x[m][d]["XR"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
     
-    # Each member can carryover up to 2 rests if he/she is on night shift in the current roster; 0 if not
+    # Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if not
     for m in members.index:
-        model += r1_night[m] == x[m][7]["NG"] + x[m][14]["NG"]
-        model += r2_rests[m] <= 2 * r1_night[m]
+        model += r1_night[m] == lpSum([x[m][d]["NG"] for d in days.index])/7
+        model += r1_night_bin[m] <= r1_night[m]
+        model += r1_night_bin[m] > r1_night[m] - 1
+        model += r2_rests[m] <= 2 * r1_night_bin[m]
     
     # COMPOUNDED CONSTRAINTS
     
