@@ -72,7 +72,7 @@ def solve(dat):
     
     # STRUCTURAL CONSTRAINTS
 
-    # Each member on each day has to be assigned to one and only one shift (including part-time, rest and leave)
+    # Each member on each day has to be assigned to one and only one shift, including part-time, rest and leave shifts
     for m in members.index:
         for d in days.index:
             model += lpSum([x[m][d][s] for s in shifts.index]) == 1
@@ -87,15 +87,15 @@ def solve(dat):
     
     # COMPLEX CONSTRAINTS
     
-    # Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest
+    # Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift
     for m in members.index:
         model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte'] - carryover.ix[m,'r0_rests'] + r2_rests[m]
     
-    # Each member needs to be assigned 2*weeks +/- carryover rests
+    # Each member needs to be assigned 2*weeks +/- carryover rest shifts
     for m in members.index:
         model += lpSum([x[m][d]["XR"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
     
-    # Each member can only carryover up to 2 rests if he/she is on night shift in the current roster
+    # Each member can carryover up to 2 rests if he/she is on night shift in the current roster; 0 if not
     for m in members.index:
         model += r1_night[m] == x[m][7]["NG"] + x[m][14]["NG"]
         model += r2_rests[m] <= 2 * r1_night[m]
