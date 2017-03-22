@@ -21,7 +21,9 @@ def validate_input(dat):
         rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
     elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] % 1 <> 0:
         rtn["Test 0 - Setting / Weeks"] = 'value not integer'
-        
+    
+    # Carry-in rest=[0,1,2]
+    
     return rtn
     
 def solve(dat):
@@ -47,19 +49,6 @@ def solve(dat):
     
     # Create and define the problem variables
     x = LpVariable.dicts("x_%s_%s_%s", (members.index, days.index, shifts.index), 0, 1, LpBinary)
-#    x_mg = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_am1 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_am2 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_am3 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_pm1 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_pm2 = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_ng = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_oc = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_oe = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_or = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_xl = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_xp = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
-#    x_xr = LpVariable.dicts("roster_%s_%s", (members, days), 0, 1, LpBinary)
     
     # Create and define the additional variables
 
