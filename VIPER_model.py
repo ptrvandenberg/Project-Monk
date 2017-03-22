@@ -42,7 +42,7 @@ def solve(dat):
     restricted = dat.parse('restricted')
     restricted = restricted.set_index('memid','dayseq','shiftcd')
     
-    # Commence model definition and set optimisation direction
+    # [001] Commence model definition and set optimisation direction
     model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
@@ -65,15 +65,15 @@ def solve(dat):
 
     r2_rests = LpVariable.dicts("r2_rests_%s", members.index, 0, 2, LpInteger)
     r1_night = LpVariable.dicts("r1_night_%s", members.index, 0, 1, LpContinuous)
-    r1_night_bin = LpVariable.dicts("r1_night_bin_%s", members.index, 0, 1, LpBinary)
+    r1_night_bin1 = LpVariable.dicts("r1_night_bin1_%s", members.index, 0, 1, LpBinary)
+    r1_night_bin2 = LpVariable.dicts("r1_night_bin2_%s", members.index, 0, 1, LpBinary)
     
-    # Set the objective
-    mds = [(m,d,s) for m in members.index for d in days.index for s in shifts.index]
-    model += lpSum([x[m][d][s] for (m,d,s) in mds])
+    # [001] Set the objective
+    model += lpSum([x[m][d][s] for m in members.index for d in days.index for s in shifts.index])
     
     # STRUCTURAL CONSTRAINTS
 
-    # Each member on each day has to be assigned to one and only one shift, including part-time, rest and leave shifts
+    # [002] Each member on each day has to be assigned to one and only one shift, including part-time, rest and leave shifts
     for m in members.index:
         for d in days.index:
             model += lpSum([x[m][d][s] for s in shifts.index]) == 1
@@ -88,24 +88,28 @@ def solve(dat):
     
     # COMPLEX CONSTRAINTS
     
-    # Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift
+    # [003] Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift
     for m in members.index:
         model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte'] - carryover.ix[m,'r0_rests'] + r2_rests[m]
     
-    # Each member needs to be assigned 2*weeks +/- carryover rest shifts
+    # [004] Each member needs to be assigned 2*weeks +/- carryover rest shifts
     for m in members.index:
         model += lpSum([x[m][d]["XR"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
     
-    # Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if less
+    # [005] Each member needs to be assigned to 5*(1-FTE)*weeks part-time shifts
+    for m in members.index:
+        model += lpSum([x[m][d]["XP"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 5 * (1 - members.ix[m,'fte'])
+    
+    # [006] Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if less
     for m in members.index:
         model += r1_night[m] == lpSum([x[m][d]["NG"] for d in days.index])/7
-        model += r1_night_bin[m] <= r1_night[m]
-        model += r1_night_bin[m] > r1_night[m] - 1
-        model += r2_rests[m] <= 2 * r1_night_bin[m]
+        model += r1_night_bin1[m] <= r1_night[m]
+        model += r1_night_bin1[m] > r1_night[m] - 1
+        model += r2_rests[m] <= 2 * r1_night_bin1[m]
     
     # Each member is assigned one recovery shift following 4+ consecutive night shifts; 0 if less
-    for m in members.index:
-        model += ...
+    #for m in members.index:
+    #    model += ...
     
     # COMPOUNDED CONSTRAINTS
     
