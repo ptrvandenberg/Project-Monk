@@ -22,6 +22,7 @@ def validate_input(dat):
     elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] % 1 <> 0:
         rtn["Test 0 - Setting / Weeks"] = 'value not integer'
     
+    # Even number of weeks
     # Carry-in rest=[0,1,2]
     
     return rtn
