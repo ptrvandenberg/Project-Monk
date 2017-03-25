@@ -54,9 +54,10 @@ def solve(dat):
     # Create and define the additional variables
 
     r2_rests = LpVariable.dicts("r2_rests_%s", members.index, 0, 2, LpInteger)
-    r1_night = LpVariable.dicts("r1_night_%s", members.index, 0, 1, LpContinuous)
-    r1_night_bin1 = LpVariable.dicts("r1_night_bin1_%s", members.index, 0, 1, LpBinary)
-    r1_night_bin2 = LpVariable.dicts("r1_night_bin2_%s", members.index, 0, 1, LpBinary)
+    NG_bin1 = LpVariable.dicts("NG_bin1_%s", members.index, 0, 1, LpBinary)
+    NG_bin4 = LpVariable.dicts("NG_bin4_%s", members.index, 0, 1, LpBinary)
+    NG_bin5 = LpVariable.dicts("NG_bin5_%s", members.index, 0, 1, LpBinary)
+    NG_bin8 = LpVariable.dicts("NG_bin8_%s", members.index, 0, 1, LpBinary)
     
     # [001] Set the objective
     model += lpSum([x[m][d][s] for m in members.index for d in days.index for s in shifts.index])
@@ -91,11 +92,16 @@ def solve(dat):
         model += lpSum([x[m][d]["XP"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 5 * (1 - members.ix[m,'fte'])
     
     # [006] Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if less
-    for m in members.index:
-        model += r1_night[m] == lpSum([x[m][d]["NG"] for d in days.index])/7
-        model += r1_night_bin1[m] <= r1_night[m]
-        model += r1_night_bin1[m] > r1_night[m] - 1
-        model += r2_rests[m] <= 2 * r1_night_bin1[m]
+    for m in members:
+        model += r2_rests[m] ≤ 2 * (NG_bin1[m] + NG_bin4[m] + NG_bin5[m] + NG_bin8[m])
+        model += NG_bin1 ≤ lpSum([x[m][d][”NG”] for d in range(1,8)]) / 7
+        model += NG_bin1 > lpSum([x[m][d][”NG”] for d in range(1,8)]) / 7 - 1
+        model += NG_bin4 ≤ lpSum([x[m][d][”NG”] for d in range(4,11)]) / 7
+        model += NG_bin4 > lpSum([x[m][d][”NG”] for d in range(4,11)]) / 7 - 1
+        model += NG_bin5 ≤ lpSum([x[m][d][”NG”] for d in range(5,12)]) / 7
+        model += NG_bin5 > lpSum([x[m][d][”NG”] for d in range(5,12)]) / 7 - 1
+        model += NG_bin8 ≤ lpSum([x[m][d][”NG”] for d in range(8,15)]) / 7
+        model += NG_bin8 > lpSum([x[m][d][”NG”] for d in range(8,15)]) / 7 - 1
     
     # Each member is assigned one recovery shift following 4+ consecutive night shifts; 0 if less
     #for m in members.index:
