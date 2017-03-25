@@ -94,18 +94,16 @@ def solve(dat):
     # [006] Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if less
     for m in members.index:
         model += r2_rests[m] <= 2 * (NG_bin1[m] + NG_bin4[m] + NG_bin5[m] + NG_bin8[m])
-        model += NG_bin1 <= lpSum([x[m][d]["NG"] for d in range(1,8)]) / 7
-        model += NG_bin1 > lpSum([x[m][d]["NG"] for d in range(1,8)]) / 7 - 1
-        model += NG_bin4 <= lpSum([x[m][d]["NG"] for d in range(4,11)]) / 7
-        model += NG_bin4 > lpSum([x[m][d]["NG"] for d in range(4,11)]) / 7 - 1
-        model += NG_bin5 <= lpSum([x[m][d]["NG"] for d in range(5,12)]) / 7
-        model += NG_bin5 > lpSum([x[m][d]["NG"] for d in range(5,12)]) / 7 - 1
-        model += NG_bin8 <= lpSum([x[m][d]["NG"] for d in range(8,15)]) / 7
-        model += NG_bin8 > lpSum([x[m][d]["NG"] for d in range(8,15)]) / 7 - 1
+        model += NG_bin1[m] <= lpSum([x[m][d]["NG"] for d in range(1,8)]) / 7
+        model += NG_bin1[m] > lpSum([x[m][d]["NG"] for d in range(1,8)]) / 7 - 1
+        model += NG_bin4[m] <= lpSum([x[m][d]["NG"] for d in range(4,11)]) / 7
+        model += NG_bin4[m] > lpSum([x[m][d]["NG"] for d in range(4,11)]) / 7 - 1
+        model += NG_bin5[m] <= lpSum([x[m][d]["NG"] for d in range(5,12)]) / 7
+        model += NG_bin5[m] > lpSum([x[m][d]["NG"] for d in range(5,12)]) / 7 - 1
+        model += NG_bin8[m] <= lpSum([x[m][d]["NG"] for d in range(8,15)]) / 7
+        model += NG_bin8[m] > lpSum([x[m][d]["NG"] for d in range(8,15)]) / 7 - 1
     
-    # Each member is assigned one recovery shift following 4+ consecutive night shifts; 0 if less
-    #for m in members.index:
-    #    model += ...
+    # [007] Each member is assigned one recovery shift following 4+ consecutive night shifts; 0 if less
     
     # COMPOUNDED CONSTRAINTS
     
