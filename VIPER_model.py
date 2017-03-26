@@ -34,7 +34,7 @@ def solve(dat):
 
     # Parse input data
     settings = dat.parse('settings', index_col = 'parameter')
-    members = dat.parse('members')
+    members = dat.parse('members', index_col = 'memid')
     days = dat.parse('days', index_col = 'dayseq')
     shifts = dat.parse('shifts', index_col = 'shiftcd')    
     shiftdates = dat.parse('shiftdates', index_col = 'shiftcd')
@@ -104,7 +104,20 @@ def solve(dat):
         model += NG_bin8[m] > lpSum([x[m][d]["NG"] for d in range(8,15)]) / 7 - 1
     
     # [007] Each member is assigned one recovery shift following 4+ consecutive night shifts; 0 if less
-    
+    for m in members.index:
+        if carryover.ix[m,'w0_nights'] = 7:
+            x[m][1]["OR"] = 1
+        elif carryover.ix[m,'w0_nights'] = 4 and carryover.ix[m,'d0_shift'] = "NG":
+            x[m][1]["OR"] = 1 - x[m][1]["NG"]
+        else:
+            x[m][1]["OR"] = 0
+
+        x[m][2]["OR"] = 0
+        x[m][3]["OR"] = 0
+
+        if carryover.ix[m,'w0_nights'] = 4 and carryover.ix[m,'d0_shift'] = “NG”:
+            x[m][4][”OR”] = x[m][1][”NG”]
+
     # COMPOUNDED CONSTRAINTS
     
     # STABILITY CONSTRAINTS
