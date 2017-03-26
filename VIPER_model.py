@@ -105,18 +105,18 @@ def solve(dat):
     
     # [007] Each member is assigned one recovery shift following 4+ consecutive night shifts; 0 if less
     for m in members.index:
-        if carryover.ix[m,'w0_nights'] = 7:
-            x[m][1]["OR"] = 1
-        elif carryover.ix[m,'w0_nights'] = 4 and carryover.ix[m,'d0_shift'] = "NG":
-            x[m][1]["OR"] = 1 - x[m][1]["NG"]
+        if carryover.ix[m,'w0_nights'] == 7:
+            model += x[m][1]["OR"] == 1
+        elif carryover.ix[m,'w0_nights'] == 4 and carryover.ix[m,'d0_shift'] == "NG":
+            model += x[m][1]["OR"] == 1 - x[m][1]["NG"]
         else:
-            x[m][1]["OR"] = 0
+            model += x[m][1]["OR"] == 0
 
-        x[m][2]["OR"] = 0
-        x[m][3]["OR"] = 0
+        model += x[m][2]["OR"] == 0
+        model += x[m][3]["OR"] == 0
 
-        if carryover.ix[m,'w0_nights'] = 4 and carryover.ix[m,'d0_shift'] = “NG”:
-            x[m][4][”OR”] = x[m][1][”NG”]
+        if carryover.ix[m,'w0_nights'] == 4 and carryover.ix[m,'d0_shift'] == "NG":
+            model += x[m][4]["OR"] == x[m][1]["NG"]
 
     # COMPOUNDED CONSTRAINTS
     
