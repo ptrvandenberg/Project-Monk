@@ -118,6 +118,14 @@ def solve(dat):
         if carryover.ix[m,'w0_nights'] == 4 and carryover.ix[m,'d0_shift'] == "NG":
             model += x[m][4]["OR"] == x[m][1]["NG"]
 
+        for w in range(1,settings.ix['nbr_roster_weeks','value']):
+            model += x[m][5+7*(w-1)]["OR"] >= lpSum([x[m][d]["NG"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 + (1 - x[m][5+7*(w-1)][”NG”]) - 1
+            model += x[m][5+7*(w-1)]["OR"] <= lpSum([x[m][d]["NG"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4
+            model += x[m][5+7*(w-1)]["OR"] <= 1 - x[m][5+7*(w-1)][”NG”]
+
+            model += x[m][6+7*(w-1)]["OR"] == 0
+            model += x[m][7+7*(w-1)]["OR"] == 0
+
     # COMPOUNDED CONSTRAINTS
     
     # STABILITY CONSTRAINTS
