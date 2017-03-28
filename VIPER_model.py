@@ -131,8 +131,8 @@ def solve(dat):
             model += x[m][8+7*(w-1)]["OR"] <= lpSum([x[m][d]["NG"] for d in range(4+7*(w-1),8+7*(w-1))]) / 4
             model += x[m][8+7*(w-1)]["OR"] > lpSum([x[m][d]["NG"] for d in range(4+7*(w-1),8+7*(w-1))]) / 4 - x[m][8+7*(w-1)]["NG"] - 1
 
-            model += x[m][9+7*(w-1)]["OR"] = 0
-            model += x[m][10+7*(w-1)]["OR"] = 0
+            model += x[m][9+7*(w-1)]["OR"] == 0
+            model += x[m][10+7*(w-1)]["OR"] == 0
 
     # COMPOUNDED CONSTRAINTS
     
