@@ -137,7 +137,7 @@ def solve(dat):
             model += x[m][11+7*(w-1)]["OR"] <= lpSum([x[m][d]["NG"] for d in range(4+7*(w-1),11+7*(w-1))]) / 7
             model += x[m][11+7*(w-1)]["OR"] > lpSum([x[m][d]["NG"] for d in range(4+7*(w-1),11+7*(w-1))]) / 7 - 1
             
-        for w == settings.ix['nbr_roster_weeks','value']:
+        for w in range(settings.ix['nbr_roster_weeks','value'],settings.ix['nbr_roster_weeks','value']+1):
             model += x[m][5+7*(w-1)]["OR"] <= lpSum([x[m][d]["NG"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4
             model += x[m][5+7*(w-1)]["OR"] <= 1 - x[m][5+7*(w-1)]["NG"]
             model += x[m][5+7*(w-1)]["OR"] > lpSum([x[m][d]["NG"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 - x[m][5+7*(w-1)]["NG"] - 1
