@@ -93,54 +93,54 @@ def solve(dat):
     
     # [006] Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if less
     for m in members.index:
-        model += r2_rests[m] <= 2 * (NG_bin1[m] + NG_bin4[m] + NG_bin5[m] + NG_bin8[m])
-        model += NG_bin1[m] <= lpSum([x[m][d]["NG"] for d in range(1,8)]) / 7
-        model += NG_bin1[m] > lpSum([x[m][d]["NG"] for d in range(1,8)]) / 7 - 1
-        model += NG_bin4[m] <= lpSum([x[m][d]["NG"] for d in range(4,11)]) / 7
-        model += NG_bin4[m] > lpSum([x[m][d]["NG"] for d in range(4,11)]) / 7 - 1
-        model += NG_bin5[m] <= lpSum([x[m][d]["NG"] for d in range(5,12)]) / 7
-        model += NG_bin5[m] > lpSum([x[m][d]["NG"] for d in range(5,12)]) / 7 - 1
-        model += NG_bin8[m] <= lpSum([x[m][d]["NG"] for d in range(8,15)]) / 7
-        model += NG_bin8[m] > lpSum([x[m][d]["NG"] for d in range(8,15)]) / 7 - 1
+        model += r2_rests[m] <= 2 * (RN_bin1[m] + RN_bin4[m] + RN_bin5[m] + RN_bin8[m])
+        model += RN_bin1[m] <= lpSum([x[m][d]["RN"] for d in range(1,8)]) / 7
+        model += RN_bin1[m] > lpSum([x[m][d]["RN"] for d in range(1,8)]) / 7 - 1
+        model += RN_bin4[m] <= lpSum([x[m][d]["RN"] for d in range(4,11)]) / 7
+        model += RN_bin4[m] > lpSum([x[m][d]["RN"] for d in range(4,11)]) / 7 - 1
+        model += RN_bin5[m] <= lpSum([x[m][d]["RN"] for d in range(5,12)]) / 7
+        model += RN_bin5[m] > lpSum([x[m][d]["RN"] for d in range(5,12)]) / 7 - 1
+        model += RN_bin8[m] <= lpSum([x[m][d]["RN"] for d in range(8,15)]) / 7
+        model += RN_bin8[m] > lpSum([x[m][d]["RN"] for d in range(8,15)]) / 7 - 1
     
     # [007] Each member is assigned one recovery shift following 4+ consecutive night shifts; 0 if less
     for m in members.index:
         if carryover.ix[m,'w0_nights'] == 7:
             model += x[m][1]["OR"] == 1
-        elif carryover.ix[m,'w0_nights'] == 4 and carryover.ix[m,'d0_shift'] == "NG":
-            model += x[m][1]["OR"] == 1 - x[m][1]["NG"]
+        elif carryover.ix[m,'w0_nights'] == 4 and carryover.ix[m,'d0_shift'] == "RN":
+            model += x[m][1]["OR"] == 1 - x[m][1]["RN"]
         else:
             model += x[m][1]["OR"] == 0
 
         model += x[m][2]["OR"] == 0
         model += x[m][3]["OR"] == 0
 
-        if carryover.ix[m,'w0_nights'] == 4 and carryover.ix[m,'d0_shift'] == "NG":
-            model += x[m][4]["OR"] == x[m][1]["NG"]
+        if carryover.ix[m,'w0_nights'] == 4 and carryover.ix[m,'d0_shift'] == "RN":
+            model += x[m][4]["OR"] == x[m][1]["RN"]
 
         for w in range(1,settings.ix['nbr_roster_weeks','value']):
-            model += x[m][5+7*(w-1)]["OR"] >= lpSum([x[m][d]["NG"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 + (1 - x[m][5+7*(w-1)]["NG"]) - 1
-            model += x[m][5+7*(w-1)]["OR"] <= lpSum([x[m][d]["NG"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4
-            model += x[m][5+7*(w-1)]["OR"] <= 1 - x[m][5+7*(w-1)]["NG"]
+            model += x[m][5+7*(w-1)]["OR"] >= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 + (1 - x[m][5+7*(w-1)]["RN"]) - 1
+            model += x[m][5+7*(w-1)]["OR"] <= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4
+            model += x[m][5+7*(w-1)]["OR"] <= 1 - x[m][5+7*(w-1)]["RN"]
 
             model += x[m][6+7*(w-1)]["OR"] == 0
             model += x[m][7+7*(w-1)]["OR"] == 0
             
-            model += x[m][8+7*(w-1)]["OR"] > lpSum([x[m][d]["NG"] for d in range(1+7*(w-1),8+7*(w-1))]) / 7 - 1
-            model += x[m][8+7*(w-1)]["OR"] <= 1 - x[m][8+7*(w-1)]["NG"]
-            model += x[m][8+7*(w-1)]["OR"] <= lpSum([x[m][d]["NG"] for d in range(4+7*(w-1),8+7*(w-1))]) / 4
-            model += x[m][8+7*(w-1)]["OR"] > lpSum([x[m][d]["NG"] for d in range(4+7*(w-1),8+7*(w-1))]) / 4 - x[m][8+7*(w-1)]["NG"] - 1
+            model += x[m][8+7*(w-1)]["OR"] > lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),8+7*(w-1))]) / 7 - 1
+            model += x[m][8+7*(w-1)]["OR"] <= 1 - x[m][8+7*(w-1)]["RN"]
+            model += x[m][8+7*(w-1)]["OR"] <= lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),8+7*(w-1))]) / 4
+            model += x[m][8+7*(w-1)]["OR"] > lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),8+7*(w-1))]) / 4 - x[m][8+7*(w-1)]["RN"] - 1
 
             model += x[m][9+7*(w-1)]["OR"] == 0
             model += x[m][10+7*(w-1)]["OR"] == 0
             
-            model += x[m][11+7*(w-1)]["OR"] <= lpSum([x[m][d]["NG"] for d in range(4+7*(w-1),11+7*(w-1))]) / 7
-            model += x[m][11+7*(w-1)]["OR"] > lpSum([x[m][d]["NG"] for d in range(4+7*(w-1),11+7*(w-1))]) / 7 - 1
+            model += x[m][11+7*(w-1)]["OR"] <= lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),11+7*(w-1))]) / 7
+            model += x[m][11+7*(w-1)]["OR"] > lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),11+7*(w-1))]) / 7 - 1
             
         for w in range(settings.ix['nbr_roster_weeks','value'],settings.ix['nbr_roster_weeks','value']+1):
-            model += x[m][5+7*(w-1)]["OR"] <= lpSum([x[m][d]["NG"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4
-            model += x[m][5+7*(w-1)]["OR"] <= 1 - x[m][5+7*(w-1)]["NG"]
-            model += x[m][5+7*(w-1)]["OR"] > lpSum([x[m][d]["NG"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 - x[m][5+7*(w-1)]["NG"] - 1
+            model += x[m][5+7*(w-1)]["OR"] <= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4
+            model += x[m][5+7*(w-1)]["OR"] <= 1 - x[m][5+7*(w-1)]["RN"]
+            model += x[m][5+7*(w-1)]["OR"] > lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 - x[m][5+7*(w-1)]["RN"] - 1
 
             model += x[m][6+7*(w-1)]["OR"] == 0
             model += x[m][7+7*(w-1)]["OR"] == 0
