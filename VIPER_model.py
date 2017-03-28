@@ -133,6 +133,9 @@ def solve(dat):
 
             model += x[m][9+7*(w-1)]["OR"] == 0
             model += x[m][10+7*(w-1)]["OR"] == 0
+            
+            model += x[m][11+7*(w-1)]["OR"] <= sum(x[m][d]["NG"] for d in range(4+7*(w-1),11+7*(w-1))) / 7
+            model += x[m][11+7*(w-1)]["OR"] > sum(x[m][d]["NG"] for d in range(4+7*(w-1),11+7*(w-1))) / 7 - 1
 
     # COMPOUNDED CONSTRAINTS
     
