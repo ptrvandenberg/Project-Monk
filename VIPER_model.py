@@ -54,10 +54,10 @@ def solve(dat):
     # Create and define the additional variables
 
     r2_rests = LpVariable.dicts("r2_rests_%s", members.index, 0, 2, LpInteger)
-    NG_bin1 = LpVariable.dicts("NG_bin1_%s", members.index, 0, 1, LpBinary)
-    NG_bin4 = LpVariable.dicts("NG_bin4_%s", members.index, 0, 1, LpBinary)
-    NG_bin5 = LpVariable.dicts("NG_bin5_%s", members.index, 0, 1, LpBinary)
-    NG_bin8 = LpVariable.dicts("NG_bin8_%s", members.index, 0, 1, LpBinary)
+    RN_bin1 = LpVariable.dicts("NG_bin1_%s", members.index, 0, 1, LpBinary)
+    RN_bin4 = LpVariable.dicts("NG_bin4_%s", members.index, 0, 1, LpBinary)
+    RN_bin5 = LpVariable.dicts("NG_bin5_%s", members.index, 0, 1, LpBinary)
+    RN_bin8 = LpVariable.dicts("NG_bin8_%s", members.index, 0, 1, LpBinary)
     eor = LpVariable.dicts("eor_%s_%s", (members.index, days.index), 0, 1, LpBinary)
     
     # [001] Set the objective
