@@ -96,6 +96,7 @@ def solve(dat):
         for d in days.index:
             if d == 1:
 #                model += shifts.ix[carryover.ix[m,'d0_shift'],'endtime'] + 10 - 24 <= lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index])
+                model += 1 == 1
             else:
                 model += lpSum([x[m][d-1][s] * shifts.ix[s,'starttime'] for s in shifts.index]) + 10 - 24 <= lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index])
 
