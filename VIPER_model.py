@@ -72,25 +72,23 @@ def solve(dat):
 
     # INPUT CONSTRAINTS
     
-    # Assign shifts based on the Committed input
-    
-    # Restrict shifts based on the Restricted input
+    # [003] ...
     
     # RULE CONSTRAINTS
     
-    # [003] Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift.
+    # [004] Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift.
     for m in members.index:
         model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte'] - carryover.ix[m,'r0_rests'] + r2_rests[m]
     
-    # [004] Each member needs to be assigned 2*weeks +/- carryover rest shifts.
+    # [005] Each member needs to be assigned 2*weeks +/- carryover rest shifts.
     for m in members.index:
         model += lpSum([x[m][d]["XR"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
     
-    # [005] Each member needs to be assigned to 5*(1-FTE)*weeks part-time shifts.
+    # [006] Each member needs to be assigned to 5*(1-FTE)*weeks part-time shifts.
     for m in members.index:
         model += lpSum([x[m][d]["XP"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 5 * (1 - members.ix[m,'fte'])
     
-    # [006] Each member needs to have at least 10 hours between shifts.
+    # [007] Each member needs to have at least 10 hours between shifts.
     
     for m in members.index:
         for d in days.index:
@@ -99,7 +97,7 @@ def solve(dat):
             else:
                 model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >= lpSum([x[m][d-1][s] * shifts.ix[s,'starttime'] for s in shifts.index]) + 10 - 24
 
-    # [007] Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if less.
+    # [008] Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if less.
     for m in members.index:
         model += r2_rests[m] <= 2 * (RN_bin1[m] + RN_bin4[m] + RN_bin5[m] + RN_bin8[m])
         model += RN_bin1[m] <= lpSum([x[m][d]["RN"] for d in range(1,8)]) / 7
@@ -111,7 +109,7 @@ def solve(dat):
         model += RN_bin8[m] <= lpSum([x[m][d]["RN"] for d in range(8,15)]) / 7
         model += RN_bin8[m] > lpSum([x[m][d]["RN"] for d in range(8,15)]) / 7 - 1
     
-    # [008] Each member is eligble for one recovery shift following 4+ consecutive night shifts; ineligible if not.
+    # [009] Each member is eligble for one recovery shift following 4+ consecutive night shifts; ineligible if not.
     for m in members.index:
         if carryover.ix[m,'w0_nights'] == 7:
             model += eor[m][1] == 1
@@ -153,7 +151,7 @@ def solve(dat):
             model += eor[m][6+7*(w-1)] == 0
             model += eor[m][7+7*(w-1)] == 0
 
-    # [009] Each member is assigned one recovery shift if they are eligible and work the following day; 0 if not.
+    # [010] Each member is assigned one recovery shift if they are eligible and work the following day; 0 if not.
     
     for m in members.index:
         for d in days.index:
