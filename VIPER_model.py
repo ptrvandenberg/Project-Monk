@@ -81,8 +81,8 @@ def solve(dat):
         else:
             if m in longshift.index:
                 if carryover.ix[m,'w0_longshift'] == 0:
-                    if not longshift.ix[(m,1),d]:
-                        model += x[m][d][longshift.ix[(m,1),d]] == 1
+                    if not longshift.ix[m,1,d]:
+                        model += x[m][d][longshift.ix[m,1,d]] == 1
 #                else:
 #                    if longshift.ix[(m, prev_longshift + 1 mod member[longshift]),d+1] not blank:
 #                        model += x[m,d, longshift[(m, prev_longshift + 1 mod member[longshift]),d+1]] = 1
