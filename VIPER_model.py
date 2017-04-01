@@ -72,8 +72,21 @@ def solve(dat):
 
     # INPUT CONSTRAINTS
     
-    # [003] ...
+    # [003] Each member for each day is assigned their short-term shift and where none allocated their long-term shift if allocated.
     
+    for m in members.index:
+        for d in days.index:
+            if not shortshift.ix[m,d]:
+                x[m,d,shortshift.ix[m,d]] = 1
+#        else:
+#            if m in longshift:
+#                if prev_longshift = 0:
+#                    if longshift[m,d+1] not blank:
+#                        x[m,d,longshift[m,d+1]] = 1
+#                else:
+#                    if longshift[(m, prev_longshift + 1 mod member[longshift]),d+1] not blank:
+#                        x[m,d, longshift[(m, prev_longshift + 1 mod member[longshift]),d+1]] = 1
+   
     # RULE CONSTRAINTS
     
     # [004] Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift.
