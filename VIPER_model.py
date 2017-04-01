@@ -37,13 +37,13 @@ def solve(dat):
     members = dat.parse('members', index_col = 'memid')
     days = dat.parse('days', index_col = 'dayseq')
     shifts = dat.parse('shifts', index_col = 'shiftcd')    
-    shiftdates = dat.parse('shiftdates', index_col = 'shiftcd')
+#    shiftdates = dat.parse('shiftdates', index_col = 'shiftcd')
     carryover = dat.parse('carryover', index_col = 'memid')
     longshift = dat.parse('longshift')
-    longshift = longshift.set_index('memid','week')
+    longshift = longshift.set_index('memid','roster')
     shortshift = dat.parse('shortshift', index_col = 'memid')
-    restricted = dat.parse('restricted')
-    restricted = restricted.set_index('memid','dayseq','shiftcd')
+#    restricted = dat.parse('restricted')
+#    restricted = restricted.set_index('memid','dayseq','shiftcd')
     
     # [001] Commence model definition and set optimisation direction.
     model = LpProblem("roster", LpMaximize)
@@ -81,10 +81,10 @@ def solve(dat):
         else:
             if m in longshift.index:
                 if carryover.ix[m,'w0_longshift'] == 0:
-                    if not longshift.ix[m,d]:
-                        model += x[m][d][longshift.ix[m,d]] == 1
+                    if not longshift.ix[(m,1),d]:
+                        model += x[m][d][longshift.ix[(m,1),d]] == 1
 #                else:
-#                    if longshift[(m, prev_longshift + 1 mod member[longshift]),d+1] not blank:
+#                    if longshift.ix[(m, prev_longshift + 1 mod member[longshift]),d+1] not blank:
 #                        model += x[m,d, longshift[(m, prev_longshift + 1 mod member[longshift]),d+1]] = 1
    
     # RULE CONSTRAINTS
