@@ -58,6 +58,7 @@ def solve(dat):
     NG_bin4 = LpVariable.dicts("NG_bin4_%s", members.index, 0, 1, LpBinary)
     NG_bin5 = LpVariable.dicts("NG_bin5_%s", members.index, 0, 1, LpBinary)
     NG_bin8 = LpVariable.dicts("NG_bin8_%s", members.index, 0, 1, LpBinary)
+    eor = LpVariable.dicts("eor_%s_%s", (members.index, days.index), 0, 1, LpBinary)
     
     # [001] Set the objective
     model += lpSum([x[m][d][s] for m in members.index for d in days.index for s in shifts.index])
@@ -106,44 +107,44 @@ def solve(dat):
     # [007] Each member is assigned one recovery shift following 4+ consecutive night shifts; 0 if less
     for m in members.index:
         if carryover.ix[m,'w0_nights'] == 7:
-            model += x[m][1]["OR"] == 1
+            model += eor[m][1] == 1
         elif carryover.ix[m,'w0_nights'] == 4 and carryover.ix[m,'d0_shift'] == "RN":
-            model += x[m][1]["OR"] == 1 - x[m][1]["RN"]
+            model += eor[m][1] == 1 - x[m][1]["RN"]
         else:
-            model += x[m][1]["OR"] == 0
+            model += eor[m][1] == 0
 
-        model += x[m][2]["OR"] == 0
-        model += x[m][3]["OR"] == 0
+        model += eor[m][2] == 0
+        model += eor[m][3] == 0
 
         if carryover.ix[m,'w0_nights'] == 4 and carryover.ix[m,'d0_shift'] == "RN":
-            model += x[m][4]["OR"] == x[m][1]["RN"]
+            model += eor[m][4] == x[m][1]["RN"]
 
         for w in range(1,settings.ix['nbr_roster_weeks','value']):
-            model += x[m][5+7*(w-1)]["OR"] >= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 + (1 - x[m][5+7*(w-1)]["RN"]) - 1
-            model += x[m][5+7*(w-1)]["OR"] <= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4
-            model += x[m][5+7*(w-1)]["OR"] <= 1 - x[m][5+7*(w-1)]["RN"]
+            model += eor[m][5+7*(w-1)] >= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 + (1 - x[m][5+7*(w-1)]["RN"]) - 1
+            model += eor[m][5+7*(w-1)] <= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4
+            model += eor[m][5+7*(w-1)] <= 1 - x[m][5+7*(w-1)]["RN"]
 
-            model += x[m][6+7*(w-1)]["OR"] == 0
-            model += x[m][7+7*(w-1)]["OR"] == 0
+            model += eor[m][6+7*(w-1)] == 0
+            model += eor[m][7+7*(w-1)] == 0
             
-            model += x[m][8+7*(w-1)]["OR"] > lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),8+7*(w-1))]) / 7 - 1
-            model += x[m][8+7*(w-1)]["OR"] <= 1 - x[m][8+7*(w-1)]["RN"]
-            model += x[m][8+7*(w-1)]["OR"] <= lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),8+7*(w-1))]) / 4
-            model += x[m][8+7*(w-1)]["OR"] > lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),8+7*(w-1))]) / 4 - x[m][8+7*(w-1)]["RN"] - 1
+            model += eor[m][8+7*(w-1)] > lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),8+7*(w-1))]) / 7 - 1
+            model += eor[m][8+7*(w-1)] <= 1 - x[m][8+7*(w-1)]["RN"]
+            model += eor[m][8+7*(w-1)] <= lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),8+7*(w-1))]) / 4
+            model += eor[m][8+7*(w-1)] > lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),8+7*(w-1))]) / 4 - x[m][8+7*(w-1)]["RN"] - 1
 
-            model += x[m][9+7*(w-1)]["OR"] == 0
-            model += x[m][10+7*(w-1)]["OR"] == 0
+            model += eor[m][9+7*(w-1)] == 0
+            model += eor[m][10+7*(w-1)] == 0
             
-            model += x[m][11+7*(w-1)]["OR"] <= lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),11+7*(w-1))]) / 7
-            model += x[m][11+7*(w-1)]["OR"] > lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),11+7*(w-1))]) / 7 - 1
+            model += eor[m][11+7*(w-1)] <= lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),11+7*(w-1))]) / 7
+            model += eor[m][11+7*(w-1)] > lpSum([x[m][d]["RN"] for d in range(4+7*(w-1),11+7*(w-1))]) / 7 - 1
             
         for w in range(settings.ix['nbr_roster_weeks','value'],settings.ix['nbr_roster_weeks','value']+1):
-            model += x[m][5+7*(w-1)]["OR"] <= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4
-            model += x[m][5+7*(w-1)]["OR"] <= 1 - x[m][5+7*(w-1)]["RN"]
-            model += x[m][5+7*(w-1)]["OR"] > lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 - x[m][5+7*(w-1)]["RN"] - 1
+            model += eor[m][5+7*(w-1)] <= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4
+            model += eor[m][5+7*(w-1)] <= 1 - x[m][5+7*(w-1)]["RN"]
+            model += eor[m][5+7*(w-1)] > lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 - x[m][5+7*(w-1)]["RN"] - 1
 
-            model += x[m][6+7*(w-1)]["OR"] == 0
-            model += x[m][7+7*(w-1)]["OR"] == 0
+            model += eor[m][6+7*(w-1)] == 0
+            model += eor[m][7+7*(w-1)] == 0
 
     # COMPOUNDED CONSTRAINTS
     
