@@ -76,8 +76,8 @@ def solve(dat):
     
     for m in members.index:
         for d in days.index:
-            if not shortshift.ix[m,d]:
-                x[m,d,shortshift.ix[m,d]] = 1
+            if not shortshift.ix[m,d-1]:
+                x[m,d,shortshift.ix[m,d-1]] = 1
 #        else:
 #            if m in longshift:
 #                if prev_longshift = 0:
