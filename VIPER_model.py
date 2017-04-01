@@ -153,7 +153,7 @@ def solve(dat):
             if d <> settings.ix['nbr_roster_weeks','value'] * 7:
                 model += x[m][d]["OR"] <= eor[m][d]
                 model += x[m][d]["OR"] <= lpSum([x[m][d+1][s] for s in shifts.index if s not in ("XL","XP","XR")])
-                model += x[m][d]["OR"] > eor[m,d] + lpSum([x[m][d+1][s] for s in shifts.index if s not in ("XL","XP","XR")]) - 2
+                model += x[m][d]["OR"] > eor[m][d] + lpSum([x[m][d+1][s] for s in shifts.index if s not in ("XL","XP","XR")]) - 2
 
     # COMPOUNDED CONSTRAINTS
     
