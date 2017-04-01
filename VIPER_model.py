@@ -77,15 +77,15 @@ def solve(dat):
     for m in members.index:
         for d in days.index:
             if not shortshift.ix[m,d-1]:
-                x[m,d,shortshift.ix[m,d-1]] = 1
-#        else:
-#            if m in longshift:
-#                if prev_longshift = 0:
-#                    if longshift[m,d+1] not blank:
-#                        x[m,d,longshift[m,d+1]] = 1
+                model += x[m][d][shortshift.ix[m,d-1]] = 1
+        else:
+            if m in longshift.index:
+                if carryover.ix[m,'w0_longshift'] == 0:
+                    if not longshift.ix[m,d]:
+                        model += x[m][d][longshift.ix[m,d]] = 1
 #                else:
 #                    if longshift[(m, prev_longshift + 1 mod member[longshift]),d+1] not blank:
-#                        x[m,d, longshift[(m, prev_longshift + 1 mod member[longshift]),d+1]] = 1
+#                        model += x[m,d, longshift[(m, prev_longshift + 1 mod member[longshift]),d+1]] = 1
    
     # RULE CONSTRAINTS
     
