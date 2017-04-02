@@ -79,14 +79,17 @@ def solve(dat):
             if not isnull(shortshift.ix[m,d-1]):
                 model += x[m][d][shortshift.ix[m,d-1]] == 1
             else:
-                if m in longshift.index:
-                    if carryover.ix[m,'w0_longshift'] == 1:
+                if members.ix[m,'longshift'] == 1:
+                    if not isnull(longshift.ix[m].ix[1,d-1]):
+                        model += x[m][d][longshift.ix[m].ix[1,d-1]] == 1
+                elif members.ix[m,'longshift'] > 1:
+                    if carryover.ix[m,'w0_longshift'] < members.ix[m,'longshift']:
+                        if not isnull(longshift.ix[m].ix[carryover.ix[m,'w0_longshift']+1, d-1]):
+                            model += x[m][d][longshift.ix[m].ix[carryover.ix[m,'w0_longshift']+1, d-1]] == 1
+                    else:
                         if not isnull(longshift.ix[m].ix[1,d-1]):
                             model += x[m][d][longshift.ix[m].ix[1,d-1]] == 1
-#                   else:
-#                        if longshift.ix[(m, prev_longshift + 1 mod member[longshift]),d+1] not blank:
-#                            model += x[m,d, longshift[(m, prev_longshift + 1 mod member[longshift]),d+1]] = 1
-   
+
     # RULE CONSTRAINTS
     
     # [004] Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift.
