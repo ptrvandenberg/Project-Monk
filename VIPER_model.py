@@ -5,7 +5,7 @@
 # This file implements a function [solve] that formulates and solves the model as well as codifies the resulting roster
 
 # Import dependencies
-from pandas import ExcelFile
+from pandas import ExcelFile, isnull
 from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpContinuous, LpInteger, LpBinary, LpStatus, value
 
 # Validate input data (including keys, data types)
@@ -76,16 +76,16 @@ def solve(dat):
     
     for m in members.index:
         for d in days.index:
-            if not shortshift.ix[m,d-1]:
+            if not isnull(shortshift.ix[m,d-1]):
                 model += x[m][d][shortshift.ix[m,d-1]] == 1
-        else:
-            if m in longshift.index:
-                if carryover.ix[m,'w0_longshift'] == 0:
-                    if not longshift.ix[m,1,d]:
-                        model += x[m][d][longshift.ix[m,1,d]] == 1
-#                else:
-#                    if longshift.ix[(m, prev_longshift + 1 mod member[longshift]),d+1] not blank:
-#                        model += x[m,d, longshift[(m, prev_longshift + 1 mod member[longshift]),d+1]] = 1
+            else:
+                if m in longshift.index:
+                    if carryover.ix[m,'w0_longshift'] == 1:
+                        if not isnull(longshift.ix[m].ix[1,d-1]):
+                            model += x[m][d][longshift.ix[m].ix[1,d-1]] == 1
+#                   else:
+#                        if longshift.ix[(m, prev_longshift + 1 mod member[longshift]),d+1] not blank:
+#                            model += x[m,d, longshift[(m, prev_longshift + 1 mod member[longshift]),d+1]] = 1
    
     # RULE CONSTRAINTS
     
