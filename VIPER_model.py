@@ -103,12 +103,12 @@ def solve(dat):
     
     # [007] Each member needs to have at least 10 hours between shifts.
     
-#    for m in members.index:
-#        for d in days.index:
-#            if d == 1:
-#                model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >=  shifts.ix[carryover.ix[m,'d0_shift'],'endtime'] + 10 - 24
-#            else:
-#                model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >= lpSum([x[m][d-1][s] * shifts.ix[s,'starttime'] for s in shifts.index]) + 10 - 24
+    for m in members.index:
+        for d in days.index:
+            if d == 1:
+                model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >=  shifts.ix[carryover.ix[m,'d0_shift'],'endtime'] + 10 - 24
+            else:
+                model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >= lpSum([x[m][d-1][s] * shifts.ix[s,'starttime'] for s in shifts.index]) + 10 - 24
 
     # [008] Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if less.
     for m in members.index:
