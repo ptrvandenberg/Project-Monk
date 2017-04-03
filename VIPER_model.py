@@ -44,7 +44,24 @@ def solve(dat):
     shortshift = dat.parse('shortshift', index_col = 'memid')
 #    restricted = dat.parse('restricted')
 #    restricted = restricted.set_index(['memid','dayseq','shiftcd'])
+
+    # Preprocess input data
+    predetermined = shortshift.copy()
     
+    for m in members.index:
+        for d in days.index:
+            if isnull(predetermined.ix[m,d-1]):
+                if members.ix[m,'longshift'] == 1:
+                    if not isnull(longshift.ix[m].ix[1,d-1]):
+                        predetermined.ix[m,d-1] = longshift.ix[m].ix[1,d-1]
+                elif members.ix[m,'longshift'] > 1:
+                    if carryover.ix[m,'w0_longshift'] < members.ix[m,'longshift']:
+                        if not isnull(longshift.ix[m].ix[carryover.ix[m,'w0_longshift']+1, d-1]):
+                            predetermined.ix[m,d-1] = longshift.ix[m].ix[carryover.ix[m,'w0_longshift']+1, d-1]
+                    else:
+                        if not isnull(longshift.ix[m].ix[1,d-1]):
+                            predetermined.ix[m,d-1] = longshift.ix[m].ix[1,d-1]
+
     # [001] Commence model definition and set optimisation direction.
     model = LpProblem("roster", LpMaximize)
     
