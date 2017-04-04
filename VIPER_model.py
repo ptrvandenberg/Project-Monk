@@ -55,9 +55,9 @@ def solve(dat):
                     if not isnull(longshift.ix[m].ix[1,d-1]):
                         predetermined.ix[m,d-1] = longshift.ix[m].ix[1,d-1]
                 elif members.ix[m,'longshift'] > 1:
-                    if carryover.ix[m,'w0_longshift'] < members.ix[m,'longshift']:
-                        if not isnull(longshift.ix[m].ix[carryover.ix[m,'w0_longshift']+1, d-1]):
-                            predetermined.ix[m,d-1] = longshift.ix[m].ix[carryover.ix[m,'w0_longshift']+1, d-1]
+                    if carryover.ix[m,'r0_longshift'] < members.ix[m,'longshift']:
+                        if not isnull(longshift.ix[m].ix[carryover.ix[m,'r0_longshift']+1, d-1]):
+                            predetermined.ix[m,d-1] = longshift.ix[m].ix[carryover.ix[m,'r0_longshift']+1, d-1]
                     else:
                         if not isnull(longshift.ix[m].ix[1,d-1]):
                             predetermined.ix[m,d-1] = longshift.ix[m].ix[1,d-1]
@@ -89,23 +89,12 @@ def solve(dat):
 
     # INPUT CONSTRAINTS
     
-    # [003] Each member for each day is assigned their short-term shift and where none allocated their long-term shift if allocated.
+    # [003] Each member for each day is assigned their predetermined shift if allocated.
     
     for m in members.index:
         for d in days.index:
-            if not isnull(shortshift.ix[m,d-1]):
-                model += x[m][d][shortshift.ix[m,d-1]] == 1
-            else:
-                if members.ix[m,'longshift'] == 1:
-                    if not isnull(longshift.ix[m].ix[1,d-1]):
-                        model += x[m][d][longshift.ix[m].ix[1,d-1]] == 1
-                elif members.ix[m,'longshift'] > 1:
-                    if carryover.ix[m,'w0_longshift'] < members.ix[m,'longshift']:
-                        if not isnull(longshift.ix[m].ix[carryover.ix[m,'w0_longshift']+1, d-1]):
-                            model += x[m][d][longshift.ix[m].ix[carryover.ix[m,'w0_longshift']+1, d-1]] == 1
-                    else:
-                        if not isnull(longshift.ix[m].ix[1,d-1]):
-                            model += x[m][d][longshift.ix[m].ix[1,d-1]] == 1
+            if not isnull(predetermined.ix[m,d-1]):
+                model += x[m][d][predetermined.ix[m,d-1]] == 1
 
     # RULE CONSTRAINTS
     
