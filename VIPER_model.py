@@ -100,7 +100,7 @@ def solve(dat):
     for m in members.index:
         for d in days.index:
             for s in shifts.index:
-                if shifts.ix[s,'predetermined'] = 1:
+                if shifts.ix[s,'predetermined'] == 1:
                     model += x[m,d,s] == 0
     
     # RULE CONSTRAINTS
