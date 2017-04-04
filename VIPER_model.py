@@ -95,7 +95,7 @@ def solve(dat):
             if not isnull(predetermined.ix[m,d-1]):
                 model += x[m][d][predetermined.ix[m,d-1]] == 1
     
-    # [004] PREDETERMINED – If not pre-determined then not rostered on management, sergeant response, night, other committed, leave and part-time.
+    # [004] PREDETERMINED – If not pre-determined then not rostered on pre-determined shifts.
 
     # RULE CONSTRAINTS
     
