@@ -97,6 +97,12 @@ def solve(dat):
     
     # [004] PREDETERMINED – If not pre-determined then not rostered on pre-determined shifts.
 
+    for m in members.index:
+        for d in days.index:
+            for s in shifts.index:
+                if shifts.ix[s,'predetermined'] = 1:
+                    model += x[m,d,s] == 0
+    
     # RULE CONSTRAINTS
     
     # [005] FTE – Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift.
@@ -185,7 +191,7 @@ def solve(dat):
 
     # [012] STATION 1700 – Each is member can only be rostered on the Station 1700 shift when 3 night shifts before.
     
-    ...
+    
     
     # STABILITY CONSTRAINTS
 
