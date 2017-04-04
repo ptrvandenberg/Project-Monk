@@ -101,7 +101,7 @@ def solve(dat):
         for d in days.index:
             for s in shifts.index:
                 if shifts.ix[s,'predetermined'] == 1:
-                    model += x[m,d,s] == 0
+                    model += x[m][d][s] == 0
     
     # RULE CONSTRAINTS
     
