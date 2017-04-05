@@ -202,12 +202,12 @@ def solve(dat):
             model += x[m][6+7*(w-1)]["SP2"] == 0
             model += x[m][7+7*(w-1)]["SP2"] == 0
     
-    # [013] WEEKEND – All shifts on the weekend, except rest, are self-nominated only (i.e. pre-determined).
+    # [013] WEEKEND – All shifts on the weekend, except recovery and rest, are self-nominated only (i.e. pre-determined).
     
     for m in members.index:
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             for s in shifts.index:
-                if s <> "XR":
+                if s not in ("OR","XR"):
                     if predetermined.ix[m,1+7*(w-1)-1] <> s:
                         model += x[m][1+7*(w-1)][s] == 0
                     if predetermined.ix[m,7+7*(w-1)-1] <> s:
