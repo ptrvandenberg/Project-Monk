@@ -89,19 +89,16 @@ def solve(dat):
     # INPUT CONSTRAINTS
     
     # [003] PREDETERMINED – Each member for each day is assigned their pre-determined shift if allocated.
+    # [004] PREDETERMINED – If not pre-determined then not rostered on pre-determined shifts.
     
     for m in members.index:
         for d in days.index:
             if not isnull(predetermined.ix[m,d-1]):
                 model += x[m][d][predetermined.ix[m,d-1]] == 1
-    
-    # [004] PREDETERMINED – If not pre-determined then not rostered on pre-determined shifts.
-
-    for m in members.index:
-        for d in days.index:
-            for s in shifts.index:
-                if shifts.ix[s,'predetermined'] == 1:
-                    model += x[m][d][s] == 0
+            else:
+                for s in shifts.index:
+                    if shifts.ix[s,'predetermined'] == 1:
+                        model += x[m][d][s] == 0
     
     # RULE CONSTRAINTS
     
