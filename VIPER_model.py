@@ -188,7 +188,19 @@ def solve(dat):
 
     # [012] STATION 1700 – Each is member can only be rostered on the Station 1700 shift when 3 night shifts before.
     
-    
+    for m in members.index:
+        if carryover.ix[m,'w0_nights'] <> 3 or carryover.ix[m,'d0_shift'] <> "RN": 
+            model += x[m][1]["SP2"] = 0
+
+        for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+            if w <> 1:
+                model += x[m][1+7*(w-1)]["SP2"] <= lpSum([x[m][d]["RN"] for d in range(-2+7*(w-1),1+7*(w-1))]) / 3
+            model += x[m][2+7*(w-1)]["SP2"] == 0
+            model += x[m][3+7*(w-1)]["SP2"] == 0
+            model += x[m][4+7*(w-1)]["SP2"] <= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),4+7*(w-1))]) / 3
+            model += x[m][5+7*(w-1)]["SP2"] == 0
+            model += x[m][6+7*(w-1)]["SP2"] == 0
+            model += x[m][7+7*(w-1)]["SP2"] == 0
     
     # STABILITY CONSTRAINTS
 
