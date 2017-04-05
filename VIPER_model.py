@@ -217,14 +217,14 @@ def solve(dat):
 
     for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
         for d in (1,7):
-            model += lpSum([x[m][d+7*(w-1)]["RA1"] for m in members]) == 1
-            model += lpSum([x[m][d+7*(w-1)]["RA2"] for m in members]) == 0
-            model += lpSum([x[m][d+7*(w-1)]["RA3"] for m in members]) == 1
-            model += lpSum([x[m][d+7*(w-1)]["RP1"] for m in members]) == 2
-            model += lpSum([x[m][d+7*(w-1)]["SAM"] for m in members]) == 0
-            model += lpSum([x[m][d+7*(w-1)]["RP2"] for m in members]) == 0
-            model += lpSum([x[m][d+7*(w-1)]["SP1"] for m in members]) == 0
-            model += lpSum([x[m][d+7*(w-1)]["SP2"] for m in members]) == 0
+            model += lpSum([x[m][d+7*(w-1)]["RA1"] for m in members.index]) == 1
+            model += lpSum([x[m][d+7*(w-1)]["RA2"] for m in members.index]) == 0
+            model += lpSum([x[m][d+7*(w-1)]["RA3"] for m in members.index]) == 1
+            model += lpSum([x[m][d+7*(w-1)]["RP1"] for m in members.index]) == 2
+            model += lpSum([x[m][d+7*(w-1)]["SAM"] for m in members.index]) == 0
+            model += lpSum([x[m][d+7*(w-1)]["RP2"] for m in members.index]) == 0
+            model += lpSum([x[m][d+7*(w-1)]["SP1"] for m in members.index]) == 0
+            model += lpSum([x[m][d+7*(w-1)]["SP2"] for m in members.index]) == 0
     
     # STABILITY CONSTRAINTS
 
