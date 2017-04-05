@@ -190,7 +190,7 @@ def solve(dat):
     
     for m in members.index:
         if carryover.ix[m,'w0_nights'] <> 3 or carryover.ix[m,'d0_shift'] <> "RN": 
-            model += x[m][1]["SP2"] = 0
+            model += x[m][1]["SP2"] == 0
 
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             if w <> 1:
