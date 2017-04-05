@@ -213,6 +213,19 @@ def solve(dat):
                     if predetermined.ix[m,7+7*(w-1)-1] <> s:
                         model += x[m][7+7*(w-1)][s] == 0
     
+    # [014] WEEKEND – Weekend morning 700 1 member, 900 1 member; weekend afternoon 1500 2 members; none on all other response and station day shifts.
+
+    for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+        for d in (1,7):
+            model += lpSum([x[m][d+7*(w-1)]["RA1"] for m in members]) == 1
+            model += lpSum([x[m][d+7*(w-1)]["RA2"] for m in members]) == 0
+            model += lpSum([x[m][d+7*(w-1)]["RA3"] for m in members]) == 1
+            model += lpSum([x[m][d+7*(w-1)]["RP1"] for m in members]) == 2
+            model += lpSum([x[m][d+7*(w-1)]["SAM"] for m in members]) == 0
+            model += lpSum([x[m][d+7*(w-1)]["RP2"] for m in members]) == 0
+            model += lpSum([x[m][d+7*(w-1)]["SP1"] for m in members]) == 0
+            model += lpSum([x[m][d+7*(w-1)]["SP2"] for m in members]) == 0
+    
     # STABILITY CONSTRAINTS
 
     # []
