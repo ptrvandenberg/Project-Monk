@@ -256,9 +256,36 @@ def solve(dat):
         model += lpSum([x[m][d]["RP2"] for m in members.index]) == 1
         model += lpSum([x[m][d]["SP1"] for m in members.index]) == 1
 
-    # [019] 
+    # [019] FRIDAY AVO – Member are not allowed to be rostered on Friday afternoon shift and Saturday morning or afternoon shift.
     
-    # [020] 
+    for m in members.index:
+        for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+            model += x[m][6+7*(w-1)]["RP1"] + x[m][6+7*(w-1)]["RP2"] + x[m][6+7*(w-1)]["SP1"] + x[m][6+7*(w-1)]["SP2"] + x[m][7+7*(w-1)]["RA1"] + x[m][7+7*(w-1)]["RA2"] + x[m][7+7*(w-1)]["RA3"] + x[m][7+7*(w-1)]["SAM"] + x[m][7+7*(w-1)]["RP1"] + x[m][7+7*(w-1)]["RP2"] + x[m][7+7*(w-1)]["SP1"] + x[m][7+7*(w-1)]["SP2"] <= 1
+    
+    # [020] FRIDAY AVO – Members are not allowed to be rostered on Friday afternoon shifts two consecutive weeks.
+    
+    for m in members.index:
+        for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+            if w == 1:
+                if carryover.ix[m,'w0_fri_shift'] in ("RP1","RP2","SP1","SP2"):
+                    model += x[m][6]["RP1"] + x[m][6]["RP2"] + x[m][6]["SP1"] + x[m][6]["SP2"] == 0
+            else:
+                model += x[m][6+7*(w-2)]["RP1"] + x[m][6+7*(w-2)]["RP2"] + x[m][6+7*(w-2)]["SP1"] + x[m][6+7*(w-2)]["SP2"] + x[m][6+7*(w-1)]["RP1"] + x[m][6+7*(w-1)]["RP2"] + x[m][6+7*(w-1)]["SP1"] + x[m][6+7*(w-1)]["SP2"] <= 1
+    
+    # [021] SERGEANT – No 7am response shifts for Sergeants.
+    
+    for m in members.index:
+        if rank == "S":
+            for d in days.index:
+                model += x[m][d]["RA1"] == 0
+
+    # [022]
+    
+    # [023]
+    
+    # [024]
+    
+    # [025]
     
     # STABILITY CONSTRAINTS
 
