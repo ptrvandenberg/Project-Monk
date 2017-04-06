@@ -275,7 +275,7 @@ def solve(dat):
     # [021] SERGEANT – No 7am response shifts for Sergeants.
     
     for m in members.index:
-        if rank == "S":
+        if members.ix[m,'rank'] == "S":
             for d in days.index:
                 model += x[m][d]["RA1"] == 0
 
