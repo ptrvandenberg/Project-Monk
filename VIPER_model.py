@@ -226,6 +226,40 @@ def solve(dat):
             model += lpSum([x[m][d+7*(w-1)]["SP1"] for m in members.index]) == 0
             model += lpSum([x[m][d+7*(w-1)]["SP2"] for m in members.index]) == 0
     
+    # [015] WEEKDAY – On weekdays the morning response 700 and (800 or 900) need to have 1 member each.
+    
+    for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+        for d in range(2,6+1):
+            model += lpSum([x[m][d]["RA1"] for m in members.index]) == 1
+            model += lpSum([x[m][d]["RA2"] for m in members.index]) + lpSum([x[m][d]["RA3"] for m in members.index]) == 1
+
+    # [016] WEEKDAY – On weekdays the morning response 900 shift only allowed if 1500 day before.
+    
+    for m in members.index:
+        for d in days.index:
+            if d == 1:
+                if carryover.ix[m,'d0_shift'] <> "RP2" and carryover.ix[m,'d0_shift'] <> "SP1":
+                    model += x[m][d]["RA3"] == 0
+            else:
+                model += x[m][d]["RA3"] <= x[m][d-1]["RP2"] + x[m][d-1]["SP1"]
+
+    # [017] WEEKDAY – On weekdays the afternoon response 1300 shift only allowed if 700 next day.
+    
+    for m in members.index:
+        for d in days.index:
+            if d <> settings.ix['nbr_roster_weeks','value'] * 7:
+                model += x[m][d]["RP1"] <= x[m][d+1]["RS"] + x[m][d+1]["RA1"]
+    
+    # [018] WEEKDAY – On weekdays the afternoon response and station 1500 need to have 1 member each.
+    
+    for d in days.index:
+        model += lpSum([x[m][d]["RP2"] for m in members.index]) == 1
+        model += lpSum([x[m][d]["SP1"] for m in members.index]) == 1
+
+    # [019] 
+    
+    # [020] 
+    
     # STABILITY CONSTRAINTS
 
     # []
