@@ -309,10 +309,11 @@ def solve(dat):
     
     model.writeLP("c:\git\Project_Monk.lp")
     
-#    if model.status <> GRB.status.OPTIMAL:
-#        print("< < < Optimisation completed, infeasible > > >")
-#    else:
-#        print("< < < Optimisation completed, codifying roster > > >")
+    if LpStatus[model.status] == 'Infeasible':
+        print("< < < Optimisation completed, infeasible > > >")
+    elif LpStatus[model.status] == 'Optimal':
+        print("< < < Optimisation completed, codifying roster > > >")
+#        sln = ...
     
 #    sln = freeze_me(sln)
 #    print("< < < Roster codifying completed, finished > > >")
