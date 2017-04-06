@@ -287,13 +287,18 @@ def solve(dat):
     
     # [025]
     
-    # STABILITY CONSTRAINTS
-
-    # []
+    # [02x] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
     
-    # LOCAL CONSTRAINTS
+    for d in days.index:
+        for s in ("RP1","RP2","SP1","SP2"):
+            if predetermined.ix["VP34315",d-1] <> s:
+                model += x["VP34315"][d][s] == 0
     
-    # []
+    # [02x] MEMBER - MEMBER – Spencer no 7am shift unless pre-determined.
+    
+    for d in days.index:
+        if predetermined.ix["VP33968",d]-1 <> "RA1":
+            model += x["VP33968"][d]["RA1"] == 0
     
     # Solve
     print("< < < Model formulated, commencing optimisation > > >")
