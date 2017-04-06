@@ -297,7 +297,7 @@ def solve(dat):
     # [02x] MEMBER - MEMBER – Spencer no 7am shift unless pre-determined.
     
     for d in days.index:
-        if predetermined.ix["VP33968",d]-1 <> "RA1":
+        if predetermined.ix["VP33968",d-1] <> "RA1":
             model += x["VP33968"][d]["RA1"] == 0
     
     # Solve
