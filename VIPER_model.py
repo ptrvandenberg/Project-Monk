@@ -313,11 +313,11 @@ def solve(dat):
         print("< < < Optimisation completed, infeasible > > >")
     elif LpStatus[model.status] == 'Optimal':
         print("< < < Optimisation completed, codifying roster > > >")
-#        roster = DataFrame(columns=('memid', 'shiftnm', 'dayseq', 'shiftcd', 'daydate'))
+        roster = predetermined.copy()
 #        for m in member.index:
 #            for d in days.index:
 #                roster.loc[i] = [randint(-1,1) for n in range(3)]
 #                i = i + 1
         print("< < < Roster codifying completed, finished > > >")
     
-#    return roster
+    return roster
