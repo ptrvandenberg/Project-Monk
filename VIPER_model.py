@@ -311,6 +311,7 @@ def solve(dat):
     
     if LpStatus[model.status] == 'Infeasible':
         print("< < < Optimisation completed, infeasible > > >")
+        roster = {}
     elif LpStatus[model.status] == 'Optimal':
         print("< < < Optimisation completed, codifying roster > > >")
         roster = predetermined.copy()
@@ -319,5 +320,5 @@ def solve(dat):
 #                roster.loc[i] = [randint(-1,1) for n in range(3)]
 #                i = i + 1
         print("< < < Roster codifying completed, finished > > >")
-    
+
     return roster
