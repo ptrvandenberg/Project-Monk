@@ -279,7 +279,14 @@ def solve(dat):
             for d in days.index:
                 model += x[m][d]["RA1"] == 0
 
-    # [022]
+    # [022] CREW – Morning and afternoon weekday response needs to have at least 3 members, but 4 is preferred.
+    
+    for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+        for d in range(2,6+1):
+            model += lpSum([x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] for m in members.index]) >= 3
+            model += lpSum([x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] for m in members.index]) <= 4
+            model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) >= 3
+            model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) <= 4
     
     # [023]
     
