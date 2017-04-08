@@ -77,7 +77,7 @@ def solve(dat):
     eor = LpVariable.dicts("eor_%s_%s", (members.index, days.index), 0, 1, LpBinary)
     
     # [001] OBJECTIVE – Set the objective.
-    model += lpSum([x[m][d][s] for m in members.index for d in days.index for s in shifts.index])
+    model += lpSum([x[m][d][s] * 1 for m in members.index if members.ix[m,'rank']<>"S" for d in days.index for s in shifts.index if s in ("RA1","RA2","RA3","RP1","RP2")]) + lpSum([x[m][d][s] * 2 for m in members.index if  members.ix[m,'rank']="S" for d in days.index for s in shifts.index if s in ("RA1","RA2","RA3","RP1","RP2")]) + lpSum([x[m][d][s] for m in members.index for d in days.index for s in shifts.index if s in ("RS","RN")])
     
     # STRUCTURAL CONSTRAINTS
 
