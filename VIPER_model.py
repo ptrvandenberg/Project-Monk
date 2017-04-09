@@ -75,6 +75,12 @@ def solve(dat):
     RN_bin5 = LpVariable.dicts("NG_bin5_%s", members.index, 0, 1, LpBinary)
     RN_bin8 = LpVariable.dicts("NG_bin8_%s", members.index, 0, 1, LpBinary)
     eor = LpVariable.dicts("eor_%s_%s", (members.index, days.index), 0, 1, LpBinary)
+    crew_am_bin1 = LpVariable.dicts("crew_am_bin1_%s", days.index, 0, 1, LpBinary)
+    crew_am_bin2 = LpVariable.dicts("crew_am_bin2_%s", days.index, 0, 1, LpBinary)
+    crew_am_bin3 = LpVariable.dicts("crew_am_bin3_%s", days.index, 0, 1, LpBinary)
+    crew_pm_bin1 = LpVariable.dicts("crew_pm_bin1_%s", days.index, 0, 1, LpBinary)
+    crew_pm_bin2 = LpVariable.dicts("crew_pm_bin2_%s", days.index, 0, 1, LpBinary)
+    crew_pm_bin3 = LpVariable.dicts("crew_pm_bin3_%s", days.index, 0, 1, LpBinary)
     
     # [001] OBJECTIVE – Set the objective.
     model += lpSum([x[m][d][s] * 1 for m in members.index for d in days.index for s in shifts.index if members.ix[m,'rank']<>"S" and s in ("RA1","RA2","RA3","RP1","RP2")]) + lpSum([x[m][d][s] * 2 for m in members.index for d in days.index for s in shifts.index if members.ix[m,'rank']=="S" and s in ("RA1","RA2","RA3","RP1","RP2")]) + lpSum([x[m][d][s] for m in members.index for d in days.index for s in shifts.index if s in ("RS","RN")])
@@ -288,20 +294,30 @@ def solve(dat):
             model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) >= 3
             model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) <= 4
     
-    # [023]
+    # [023] CREW – Morning and afternoon (except 1700) weekday response and station have to be from the same crew.
     
-    # [024]
-    
-    # [025]
-    
-    # [02x] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
+    for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+        for d in range(2,6+1):
+            crew_am_bin1[d+7*(w-1)] + crew_am _bin2[d+7*(w-1)] + crew_am _bin3[d+7*(w-1)] == 1
+            crew_pm_bin1[d+7*(w-1)] + crew_pm _bin2[d+7*(w-1)] + crew_pm _bin3[d+7*(w-1)] == 1
+            for m in members.index if members.ix[m,'crew'] == 1:
+                crew_am_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SAM"]
+                crew_pm_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
+            for m in members.index if members.ix[m,'crew'] == 2:
+                crew_am_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SAM"]
+                crew_pm_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
+            for m in members.index if members.ix[m,'crew'] == 3:
+                crew_am_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SAM"]
+                crew_pm_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
+        
+    # [024] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
     
     for d in days.index:
         for s in ("RP1","RP2","SP1","SP2"):
             if predetermined.ix["VP34315",d-1] <> s:
                 model += x["VP34315"][d][s] == 0
     
-    # [02x] MEMBER - MEMBER – Spencer no 7am shift unless pre-determined.
+    # [025] MEMBER - MEMBER – Spencer no 7am shift unless pre-determined.
     
     for d in days.index:
         if predetermined.ix["VP33968",d-1] <> "RA1":
