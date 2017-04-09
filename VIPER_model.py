@@ -122,12 +122,12 @@ def solve(dat):
     
     # [008] 10 HOURS – Each member needs to have at least 10 hours between shifts.
     
-#    for m in members.index:
-#        for d in days.index:
-#            if d == 1:
-#                model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >=  shifts.ix[carryover.ix[m,'d0_shift'],'endtime'] + 10 - 24
-#            else:
-#                model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >= lpSum([x[m][d-1][s] * shifts.ix[s,'starttime'] for s in shifts.index]) + 10 - 24
+    for m in members.index:
+        for d in days.index:
+            if d == 1:
+                model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >=  shifts.ix[carryover.ix[m,'d0_shift'],'endtime'] + 10 - 24
+            else:
+                model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >= lpSum([x[m][d-1][s] * shifts.ix[s,'starttime'] for s in shifts.index]) + 10 - 24
 
     # [009] REST CARRYOVER – Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if not.
     for m in members.index:
@@ -298,8 +298,8 @@ def solve(dat):
     
     for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
         for d in range(2,6+1):
-            crew_am_bin1[d+7*(w-1)] + crew_am _bin2[d+7*(w-1)] + crew_am _bin3[d+7*(w-1)] == 1
-            crew_pm_bin1[d+7*(w-1)] + crew_pm _bin2[d+7*(w-1)] + crew_pm _bin3[d+7*(w-1)] == 1
+            crew_am_bin1[d+7*(w-1)] + crew_am_bin2[d+7*(w-1)] + crew_am_bin3[d+7*(w-1)] == 1
+            crew_pm_bin1[d+7*(w-1)] + crew_pm_bin2[d+7*(w-1)] + crew_pm_bin3[d+7*(w-1)] == 1
             for m in members.index if members.ix[m,'crew'] == 1:
                 crew_am_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SAM"]
                 crew_pm_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
