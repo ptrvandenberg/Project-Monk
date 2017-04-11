@@ -29,8 +29,12 @@ def validate_input(dat):
     
 def solve(dat):
 
+    print("< < < Initiated, validating inputs > > >")
+
     invalid_input = validate_input(dat)
     assert not invalid_input, invalid_input
+
+    print("< < < Inputs validated, formulating model > > >")
 
     # Parse input data
     settings = dat.parse('settings', index_col = 'parameter')
@@ -347,10 +351,9 @@ def solve(dat):
     elif LpStatus[model.status] == 'Optimal':
         print("< < < Optimisation completed, codifying roster > > >")
         roster = predetermined.copy()
-#        for m in member.index:
-#            for d in days.index:
-#                roster.loc[i] = [randint(-1,1) for n in range(3)]
-#                i = i + 1
+        for m in member.index:
+            for d in days.index:
+                roster.ix[m,d-1] = "x[m,d,s]"
         print("< < < Roster codifying completed, finished > > >")
 
     return roster
