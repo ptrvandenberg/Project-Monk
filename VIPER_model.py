@@ -34,6 +34,8 @@ def solve(dat):
 
     # Parse input data
     settings = dat.parse('settings', index_col = 'parameter')
+    rules = dat.parse('rules')
+    rules = rules.set_index(['unit','rule'])
     members = dat.parse('members', index_col = 'memid')
     days = dat.parse('days', index_col = 'dayseq')
     shifts = dat.parse('shifts', index_col = 'shiftcd')    
@@ -63,7 +65,8 @@ def solve(dat):
                             predetermined.ix[m,d-1] = longshift.ix[m].ix[1,d-1]
 
     # [001] OBJECTIVE – Commence model definition and set optimisation direction.
-    model = LpProblem("roster", LpMaximize)
+    if rules.ix[settings.ix['unit','value']].ix['001'] == 'Yes':
+        model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
     x = LpVariable.dicts("x_%s_%s_%s", (members.index, days.index, shifts.index), 0, 1, LpBinary)
