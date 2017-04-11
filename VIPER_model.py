@@ -267,12 +267,6 @@ def solve(dat):
                 if d <> settings.ix['nbr_roster_weeks','value'] * 7:
                     model += x[m][d]["RP1"] <= x[m][d+1]["RS"] + x[m][d+1]["RA1"]
     
-    # [0160] WEEKDAY – On weekdays the afternoon response and station 1500 need to have 1 member each.
-    if rules.ix[settings.ix['unit','value']].ix[160,'apply'] == 'Yes':
-        for d in days.index:
-            model += lpSum([x[m][d]["RP2"] for m in members.index]) == 1
-            model += lpSum([x[m][d]["SP1"] for m in members.index]) == 1
-
     # [0170] FRIDAY AVO – Member are not allowed to be rostered on Friday afternoon shift and Saturday morning or afternoon shift.
     if rules.ix[settings.ix['unit','value']].ix[170,'apply'] == 'Yes':
         for m in members.index:
