@@ -67,8 +67,8 @@ def solve(dat):
                         if not isnull(longshift.ix[m].ix[1,d-1]):
                             predetermined.ix[m,d-1] = longshift.ix[m].ix[1,d-1]
 
-    # [001] OBJECTIVE – Commence model definition and set optimisation direction.
-    if rules.ix[settings.ix['unit','value']].ix[1,'apply'] == 'Yes':
+    # [0000] OBJECTIVE – Commence model definition and set optimisation direction.
+    if rules.ix[settings.ix['unit','value']].ix[0,'apply'] == 'Yes':
         model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
@@ -88,22 +88,22 @@ def solve(dat):
     crew_pm_bin2 = LpVariable.dicts("crew_pm_bin2_%s", days.index, 0, 1, LpBinary)
     crew_pm_bin3 = LpVariable.dicts("crew_pm_bin3_%s", days.index, 0, 1, LpBinary)
     
-    # [001] OBJECTIVE – Set the objective.
-    if rules.ix[settings.ix['unit','value']].ix[1,'apply'] == 'Yes':
+    # [0000] OBJECTIVE – Set the objective.
+    if rules.ix[settings.ix['unit','value']].ix[0,'apply'] == 'Yes':
         model += lpSum([x[m][d][s] * 1 for m in members.index for d in days.index for s in shifts.index if members.ix[m,'rank']<>"S" and s in ("RA1","RA2","RA3","RP1","RP2")]) + lpSum([x[m][d][s] * 2 for m in members.index for d in days.index for s in shifts.index if members.ix[m,'rank']=="S" and s in ("RA1","RA2","RA3","RP1","RP2")]) + lpSum([x[m][d][s] for m in members.index for d in days.index for s in shifts.index if s in ("RS","RN")])
     
     # STRUCTURAL CONSTRAINTS
 
-    # [002] SHIFTS – Each member on each day has to be assigned to one and only one shift, including part-time, rest and leave shifts.
-    if rules.ix[settings.ix['unit','value']].ix[2,'apply'] == 'Yes':
+    # [0010] SHIFTS – Each member on each day has to be assigned to one and only one shift, including part-time, rest and leave shifts.
+    if rules.ix[settings.ix['unit','value']].ix[10,'apply'] == 'Yes':
         for m in members.index:
             for d in days.index:
                 model += lpSum([x[m][d][s] for s in shifts.index]) == 1
 
     # INPUT CONSTRAINTS
     
-    # [003] PREDETERMINED – Each member for each day is assigned their pre-determined shift if allocated; if not pre-determined then not rostered on pre-determined shifts.
-    if rules.ix[settings.ix['unit','value']].ix[3,'apply'] == 'Yes':
+    # [0020] PREDETERMINED – Each member for each day is assigned their pre-determined shift if allocated; if not pre-determined then not rostered on pre-determined shifts.
+    if rules.ix[settings.ix['unit','value']].ix[20,'apply'] == 'Yes':
         for m in members.index:
             for d in days.index:
                 if not isnull(predetermined.ix[m,d-1]):
@@ -115,23 +115,23 @@ def solve(dat):
     
     # RULE CONSTRAINTS
     
-    # [004] FTE – Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift.
-    if rules.ix[settings.ix['unit','value']].ix[4,'apply'] == 'Yes':
+    # [0030] FTE – Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift.
+    if rules.ix[settings.ix['unit','value']].ix[30,'apply'] == 'Yes':
         for m in members.index:
             model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte'] - carryover.ix[m,'r0_rests'] + r2_rests[m]
     
-    # [005] REST – Each member needs to be assigned 2*weeks +/- carryover rest shifts.
-    if rules.ix[settings.ix['unit','value']].ix[5,'apply'] == 'Yes':
+    # [0040] REST – Each member needs to be assigned 2*weeks +/- carryover rest shifts.
+    if rules.ix[settings.ix['unit','value']].ix[40,'apply'] == 'Yes':
         for m in members.index:
             model += lpSum([x[m][d]["XR"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
     
-    # [006] PART-TIME – Each member needs to be assigned to 5*(1-FTE)*weeks part-time shifts.
-    if rules.ix[settings.ix['unit','value']].ix[6,'apply'] == 'Yes':
+    # [0050] PART-TIME – Each member needs to be assigned to 5*(1-FTE)*weeks part-time shifts.
+    if rules.ix[settings.ix['unit','value']].ix[50,'apply'] == 'Yes':
         for m in members.index:
             model += lpSum([x[m][d]["XP"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 5 * (1 - members.ix[m,'fte'])
     
-    # [007] 10 HOURS – Each member needs to have at least 10 hours between shifts.
-    if rules.ix[settings.ix['unit','value']].ix[7,'apply'] == 'Yes':
+    # [0060] 10 HOURS – Each member needs to have at least 10 hours between shifts.
+    if rules.ix[settings.ix['unit','value']].ix[60,'apply'] == 'Yes':
         for m in members.index:
             for d in days.index:
                 if d == 1:
@@ -139,8 +139,8 @@ def solve(dat):
                 else:
                     model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >= lpSum([x[m][d-1][s] * shifts.ix[s,'starttime'] for s in shifts.index]) + 10 - 24
 
-    # [008] REST CARRYOVER – Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if not.
-    if rules.ix[settings.ix['unit','value']].ix[8,'apply'] == 'Yes':
+    # [0070] REST CARRYOVER – Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if not.
+    if rules.ix[settings.ix['unit','value']].ix[70,'apply'] == 'Yes':
         for m in members.index:
             model += r2_rests[m] <= 2 * (RN_bin1[m] + RN_bin4[m] + RN_bin5[m] + RN_bin8[m])
             model += RN_bin1[m] <= lpSum([x[m][d]["RN"] for d in range(1,8)]) / 7
@@ -152,8 +152,8 @@ def solve(dat):
             model += RN_bin8[m] <= lpSum([x[m][d]["RN"] for d in range(8,15)]) / 7
             model += RN_bin8[m] > lpSum([x[m][d]["RN"] for d in range(8,15)]) / 7 - 1
     
-    # [009] RECOVERY – Each member is eligble for one recovery shift following 4+ consecutive night shifts; ineligible if not.
-    if rules.ix[settings.ix['unit','value']].ix[9,'apply'] == 'Yes':
+    # [0080] RECOVERY – Each member is eligble for one recovery shift following 4+ consecutive night shifts; ineligible if not.
+    if rules.ix[settings.ix['unit','value']].ix[80,'apply'] == 'Yes':
         for m in members.index:
             if carryover.ix[m,'w0_nights'] == 7:
                 model += eor[m][1] == 1
@@ -195,8 +195,8 @@ def solve(dat):
                 model += eor[m][6+7*(w-1)] == 0
                 model += eor[m][7+7*(w-1)] == 0
 
-    # [010] RECOVERY – Each member is assigned one recovery shift if they are eligible and work the following day; 0 if not.
-    if rules.ix[settings.ix['unit','value']].ix[10,'apply'] == 'Yes':
+    # [0090] RECOVERY – Each member is assigned one recovery shift if they are eligible and work the following day; 0 if not.
+    if rules.ix[settings.ix['unit','value']].ix[90,'apply'] == 'Yes':
         for m in members.index:
             for d in days.index:
                 if d <> settings.ix['nbr_roster_weeks','value'] * 7:
@@ -204,8 +204,8 @@ def solve(dat):
                     model += x[m][d]["OR"] <= lpSum([x[m][d+1][s] for s in shifts.index if s not in ("XL","XP","XR")])
                     model += x[m][d]["OR"] > eor[m][d] + lpSum([x[m][d+1][s] for s in shifts.index if s not in ("XL","XP","XR")]) - 2
 
-    # [011] STATION 1700 – Each is member can only be rostered on the Station 1700 shift when 3 night shifts before.
-    if rules.ix[settings.ix['unit','value']].ix[11,'apply'] == 'Yes':
+    # [0100] STATION 1700 – Each is member can only be rostered on the Station 1700 shift when 3 night shifts before.
+    if rules.ix[settings.ix['unit','value']].ix[100,'apply'] == 'Yes':
         for m in members.index:
             if carryover.ix[m,'w0_nights'] <> 3 or carryover.ix[m,'d0_shift'] <> "RN": 
                 model += x[m][1]["SP2"] == 0
@@ -220,8 +220,8 @@ def solve(dat):
                 model += x[m][6+7*(w-1)]["SP2"] == 0
                 model += x[m][7+7*(w-1)]["SP2"] == 0
     
-    # [012] WEEKEND – All shifts on the weekend, except recovery and rest, are self-nominated only (i.e. pre-determined).
-    if rules.ix[settings.ix['unit','value']].ix[12,'apply'] == 'Yes':
+    # [0110] WEEKEND – All shifts on the weekend, except recovery and rest, are self-nominated only (i.e. pre-determined).
+    if rules.ix[settings.ix['unit','value']].ix[110,'apply'] == 'Yes':
         for m in members.index:
             for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
                 for s in shifts.index:
@@ -231,8 +231,8 @@ def solve(dat):
                         if predetermined.ix[m,7+7*(w-1)-1] <> s:
                             model += x[m][7+7*(w-1)][s] == 0
     
-    # [013] WEEKEND – Weekend morning 700 1 member, 900 1 member; weekend afternoon 1500 2 members; none on all other response and station day shifts.
-    if rules.ix[settings.ix['unit','value']].ix[13,'apply'] == 'Yes':
+    # [0120] WEEKEND – Weekend morning 700 1 member, 900 1 member; weekend afternoon 1500 2 members; none on all other response and station day shifts.
+    if rules.ix[settings.ix['unit','value']].ix[120,'apply'] == 'Yes':
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             for d in (1,7):
                 model += lpSum([x[m][d+7*(w-1)]["RA1"] for m in members.index]) == 1
@@ -244,15 +244,15 @@ def solve(dat):
                 model += lpSum([x[m][d+7*(w-1)]["SP1"] for m in members.index]) == 0
                 model += lpSum([x[m][d+7*(w-1)]["SP2"] for m in members.index]) == 0
     
-    # [014] WEEKDAY – On weekdays the morning response 700 and (800 or 900) need to have 1 member each.
-    if rules.ix[settings.ix['unit','value']].ix[14,'apply'] == 'Yes':
+    # [0130] WEEKDAY – On weekdays the morning response 700 and (800 or 900) need to have 1 member each.
+    if rules.ix[settings.ix['unit','value']].ix[130,'apply'] == 'Yes':
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             for d in range(2,6+1):
                 model += lpSum([x[m][d]["RA1"] for m in members.index]) == 1
                 model += lpSum([x[m][d]["RA2"] for m in members.index]) + lpSum([x[m][d]["RA3"] for m in members.index]) == 1
 
-    # [015] WEEKDAY – On weekdays the morning response 900 shift only allowed if 1500 day before.
-    if rules.ix[settings.ix['unit','value']].ix[15,'apply'] == 'Yes':
+    # [0140] WEEKDAY – On weekdays the morning response 900 shift only allowed if 1500 day before.
+    if rules.ix[settings.ix['unit','value']].ix[140,'apply'] == 'Yes':
         for m in members.index:
             for d in days.index:
                 if d == 1:
@@ -261,27 +261,27 @@ def solve(dat):
                 else:
                     model += x[m][d]["RA3"] <= x[m][d-1]["RP2"] + x[m][d-1]["SP1"]
 
-    # [016] WEEKDAY – On weekdays the afternoon response 1300 shift only allowed if 700 next day.
-    if rules.ix[settings.ix['unit','value']].ix[16,'apply'] == 'Yes':
+    # [0150] WEEKDAY – On weekdays the afternoon response 1300 shift only allowed if 700 next day.
+    if rules.ix[settings.ix['unit','value']].ix[150,'apply'] == 'Yes':
         for m in members.index:
             for d in days.index:
                 if d <> settings.ix['nbr_roster_weeks','value'] * 7:
                     model += x[m][d]["RP1"] <= x[m][d+1]["RS"] + x[m][d+1]["RA1"]
     
-    # [017] WEEKDAY – On weekdays the afternoon response and station 1500 need to have 1 member each.
-    if rules.ix[settings.ix['unit','value']].ix[17,'apply'] == 'Yes':
+    # [0160] WEEKDAY – On weekdays the afternoon response and station 1500 need to have 1 member each.
+    if rules.ix[settings.ix['unit','value']].ix[160,'apply'] == 'Yes':
         for d in days.index:
             model += lpSum([x[m][d]["RP2"] for m in members.index]) == 1
             model += lpSum([x[m][d]["SP1"] for m in members.index]) == 1
 
-    # [018] FRIDAY AVO – Member are not allowed to be rostered on Friday afternoon shift and Saturday morning or afternoon shift.
-    if rules.ix[settings.ix['unit','value']].ix[18,'apply'] == 'Yes':
+    # [0170] FRIDAY AVO – Member are not allowed to be rostered on Friday afternoon shift and Saturday morning or afternoon shift.
+    if rules.ix[settings.ix['unit','value']].ix[170,'apply'] == 'Yes':
         for m in members.index:
             for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
                 model += x[m][6+7*(w-1)]["RP1"] + x[m][6+7*(w-1)]["RP2"] + x[m][6+7*(w-1)]["SP1"] + x[m][6+7*(w-1)]["SP2"] + x[m][7+7*(w-1)]["RA1"] + x[m][7+7*(w-1)]["RA2"] + x[m][7+7*(w-1)]["RA3"] + x[m][7+7*(w-1)]["SAM"] + x[m][7+7*(w-1)]["RP1"] + x[m][7+7*(w-1)]["RP2"] + x[m][7+7*(w-1)]["SP1"] + x[m][7+7*(w-1)]["SP2"] <= 1
     
-    # [019] FRIDAY AVO – Members are not allowed to be rostered on Friday afternoon shifts two consecutive weeks.
-    if rules.ix[settings.ix['unit','value']].ix[19,'apply'] == 'Yes':
+    # [0180] FRIDAY AVO – Members are not allowed to be rostered on Friday afternoon shifts two consecutive weeks.
+    if rules.ix[settings.ix['unit','value']].ix[180,'apply'] == 'Yes':
         for m in members.index:
             for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
                 if w == 1:
@@ -290,15 +290,15 @@ def solve(dat):
                 else:
                     model += x[m][6+7*(w-2)]["RP1"] + x[m][6+7*(w-2)]["RP2"] + x[m][6+7*(w-2)]["SP1"] + x[m][6+7*(w-2)]["SP2"] + x[m][6+7*(w-1)]["RP1"] + x[m][6+7*(w-1)]["RP2"] + x[m][6+7*(w-1)]["SP1"] + x[m][6+7*(w-1)]["SP2"] <= 1
     
-    # [020] SERGEANT – No 7am response shifts for Sergeants.
-    if rules.ix[settings.ix['unit','value']].ix[20,'apply'] == 'Yes':
+    # [0190] SERGEANT – No 7am response shifts for Sergeants.
+    if rules.ix[settings.ix['unit','value']].ix[190,'apply'] == 'Yes':
         for m in members.index:
             if members.ix[m,'rank'] == "S":
                 for d in days.index:
                     model += x[m][d]["RA1"] == 0
 
-    # [021] CREW – Morning and afternoon weekday response needs to have at least 3 members, but 4 is preferred.
-    if rules.ix[settings.ix['unit','value']].ix[21,'apply'] == 'Yes':
+    # [0200] CREW – Morning and afternoon weekday response needs to have at least 3 members, but 4 is preferred.
+    if rules.ix[settings.ix['unit','value']].ix[200,'apply'] == 'Yes':
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             for d in range(2,6+1):
                 model += lpSum([x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] for m in members.index]) >= 3
@@ -306,8 +306,8 @@ def solve(dat):
                 model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) >= 3
                 model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) <= 4
     
-    # [022] CREW – Morning and afternoon (except 1700) weekday response and station have to be from the same crew.
-    if rules.ix[settings.ix['unit','value']].ix[22,'apply'] == 'Yes':
+    # [0210] CREW – Morning and afternoon (except 1700) weekday response and station have to be from the same crew.
+    if rules.ix[settings.ix['unit','value']].ix[210,'apply'] == 'Yes':
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             for d in range(2,6+1):
                 crew_am_bin1[d+7*(w-1)] + crew_am_bin2[d+7*(w-1)] + crew_am_bin3[d+7*(w-1)] == 1
@@ -323,15 +323,15 @@ def solve(dat):
                         crew_am_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SAM"]
                         crew_pm_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
         
-    # [023] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
-    if rules.ix[settings.ix['unit','value']].ix[23,'apply'] == 'Yes':
+    # [0220] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
+    if rules.ix[settings.ix['unit','value']].ix[220,'apply'] == 'Yes':
         for d in days.index:
             for s in ("RP1","RP2","SP1","SP2"):
                 if predetermined.ix["VP34315",d-1] <> s:
                     model += x["VP34315"][d][s] == 0
     
-    # [024] MEMBER - MEMBER – Spencer no 7am shift unless pre-determined.
-    if rules.ix[settings.ix['unit','value']].ix[24,'apply'] == 'Yes':
+    # [0230] MEMBER - MEMBER – Spencer no 7am shift unless pre-determined.
+    if rules.ix[settings.ix['unit','value']].ix[230,'apply'] == 'Yes':
         for d in days.index:
             if predetermined.ix["VP33968",d-1] <> "RA1":
                 model += x["VP33968"][d]["RA1"] == 0
