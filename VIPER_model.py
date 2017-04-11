@@ -244,12 +244,11 @@ def solve(dat):
                 model += lpSum([x[m][d+7*(w-1)]["SP1"] for m in members.index]) == 0
                 model += lpSum([x[m][d+7*(w-1)]["SP2"] for m in members.index]) == 0
     
-    # [0130] WEEKDAY – On weekdays the morning response 700 and (800 or 900) need to have 1 member each.
+    # [0130] WEEKDAY – On weekdays the morning response 700 needs to have 1 member only.
     if rules.ix[settings.ix['unit','value']].ix[130,'apply'] == 'Yes':
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             for d in range(2,6+1):
                 model += lpSum([x[m][d]["RA1"] for m in members.index]) == 1
-                model += lpSum([x[m][d]["RA2"] for m in members.index]) + lpSum([x[m][d]["RA3"] for m in members.index]) == 1
 
     # [0140] WEEKDAY – On weekdays the morning response 900 shift only allowed if 1500 day before.
     if rules.ix[settings.ix['unit','value']].ix[140,'apply'] == 'Yes':
