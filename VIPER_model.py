@@ -353,7 +353,9 @@ def solve(dat):
         roster = predetermined.copy()
         for m in members.index:
             for d in days.index:
-                roster.ix[m,d-1] = "x[m,d,s]"
+                for s in shifts.index:
+                    if x[m][d][s] == 1:
+                        roster.ix[m,d-1] = s
         print("< < < Roster codifying completed, finished > > >")
 
     return roster
