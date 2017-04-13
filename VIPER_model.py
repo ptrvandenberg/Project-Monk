@@ -344,6 +344,8 @@ def solve(dat):
     elif LpStatus[model.status] == 'Optimal':
         print("< < < Optimisation completed, codifying roster > > >")
         roster = predetermined.copy()
+        for v in model.variables():
+            print(v.name, "=", v.varValue)
 #        for m in members.index:
 #            for d in days.index:
 #                for s in shifts.index:
