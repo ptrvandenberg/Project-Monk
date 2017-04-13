@@ -352,7 +352,7 @@ def solve(dat):
                     m = v.name[v.name.find("_m")+2:v.name.find("_d")]
                     d = v.name[v.name.find("_d")+2:v.name.find("_s")]
                     s = v.name[v.name.find("_s")+2:]
-                    roster.ix[m,d-1] = s
+                    roster.ix[m,int(d)-1] = s
 #        for m in members.index:
 #            for d in days.index:
 #                for s in shifts.index:
