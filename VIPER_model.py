@@ -72,7 +72,7 @@ def solve(dat):
         model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
-    x = LpVariable.dicts("x_%s_%s_%s", (members.index, days.index, shifts.index), 0, 1, LpBinary)
+    x = LpVariable.dicts("x_m%s_d%s_s%s", (members.index, days.index, shifts.index), 0, 1, LpBinary)
     
     # Create and define the additional variables
     r2_rests = LpVariable.dicts("r2_rests_%s", members.index, 0, 2, LpInteger)
@@ -347,7 +347,7 @@ def solve(dat):
         for v in model.variables():
             if v.varValue == 1:
                 print(v.name, "=", v.varValue)
-                print(v.name[2:-6])
+                print(v.name[2:9])
                 print(v.name[10:-3])
                 print(v.name[13:])
 #                roster.ix[v.name,v.name-1] = v.name
