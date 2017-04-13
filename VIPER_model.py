@@ -345,7 +345,7 @@ def solve(dat):
         print("< < < Optimisation completed, codifying roster > > >")
         roster = predetermined.copy()
         for v in model.variables():
-            if v.varValue = 1:
+            if v.varValue == 1:
                 print(v.name, "=", v.varValue)
 #        for m in members.index:
 #            for d in days.index:
