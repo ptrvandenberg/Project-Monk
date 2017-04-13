@@ -345,18 +345,11 @@ def solve(dat):
         print("< < < Optimisation completed, codifying roster > > >")
         roster = predetermined.copy()
         for v in model.variables():
-            if v.name[0:2] == "x_":
-                if v.varValue == 1:
-#                    print(v.name, "=", v.varValue)
-#                    print(v.name[0:2])
-                    m = v.name[v.name.find("_m")+2:v.name.find("_d")]
-                    d = v.name[v.name.find("_d")+2:v.name.find("_s")]
-                    s = v.name[v.name.find("_s")+2:]
-                    roster.ix[m,int(d)-1] = s
-#        for m in members.index:
-#            for d in days.index:
-#                for s in shifts.index:
-#                    if x[m][d][s] == 1:
+            if v.name[0:2] == "x_" and v.varValue == 1:
+                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
+                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
+                s = v.name[v.name.find("_s")+2:]
+                roster.ix[m,int(d)-1] = s
         print("< < < Roster codifying completed, finished > > >")
 
     return roster
