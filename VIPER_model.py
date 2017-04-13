@@ -347,14 +347,12 @@ def solve(dat):
         for v in model.variables():
             if v.name[0:2] == "x_":
                 if v.varValue == 1:
-                    print(v.name, "=", v.varValue)
-                    print(v.name[0:2])
-                    print(v.name[v.name.find("_m")+2:v.name.find("_d")])
-                    print(v.name[v.name.find("_d")+2:v.name.find("_s")])
-                    print(v.name[v.name.find("_s")+2:])
-#                roster.ix[v.name,v.name-1] = v.name
-# x_mVP22082_d10_sMG
-# 0123456789
+#                    print(v.name, "=", v.varValue)
+#                    print(v.name[0:2])
+                    m = v.name[v.name.find("_m")+2:v.name.find("_d")]
+                    d = v.name[v.name.find("_d")+2:v.name.find("_s")]
+                    s = v.name[v.name.find("_s")+2:]
+                    roster.ix[m,d-1] = s
 #        for m in members.index:
 #            for d in days.index:
 #                for s in shifts.index:
