@@ -347,8 +347,8 @@ def solve(dat):
         for v in model.variables():
             if v.varValue == 1:
                 print(v.name, "=", v.varValue)
-                print(v.name[3:9])
-                print(v.name[12:v.name.find("_s")-1])
+                print(v.name[3:10])
+                print(v.name[12:v.name.find("_s")])
                 print(v.name[v.name.find("_s")+2:])
 #                roster.ix[v.name,v.name-1] = v.name
 # x_mVP22082_d10_sMG
