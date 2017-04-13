@@ -347,11 +347,15 @@ def solve(dat):
         for v in model.variables():
             if v.varValue == 1:
                 print(v.name, "=", v.varValue)
+                print(v.name[2:-6])
+                print(v.name[10:-3])
+                print(v.name[13:])
+#                roster.ix[v.name,v.name-1] = v.name
+# x_VP22082_10_MG
 #        for m in members.index:
 #            for d in days.index:
 #                for s in shifts.index:
 #                    if x[m][d][s] == 1:
-#                        roster.ix[m,d-1] = s
         print("< < < Roster codifying completed, finished > > >")
 
     return roster
