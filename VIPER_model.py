@@ -203,7 +203,8 @@ def solve(dat):
                     model += x[m][d]["OR"] <= eor[m][d]
                     model += x[m][d]["OR"] <= lpSum([x[m][d+1][s] for s in shifts.index if s not in ("XL","XP","XR")])
                     model += x[m][d]["OR"] > eor[m][d] + lpSum([x[m][d+1][s] for s in shifts.index if s not in ("XL","XP","XR")]) - 2
-            model += x[m][settings.ix['nbr_roster_weeks','value'] * 7]["OR"] <= eor[m][settings.ix['nbr_roster_weeks','value'] * 7]
+#            model += x[m][settings.ix['nbr_roster_weeks','value'] * 7]["OR"] <= eor[m][settings.ix['nbr_roster_weeks','value'] * 7]
+            model += x[m][settings.ix['nbr_roster_weeks','value'] * 7]["OR"] == 0
 
     # [0100] STATION 1700 – Each is member can only be rostered on the Station 1700 shift when 3 night shifts before.
     if rules.ix[settings.ix['unit','value']].ix[100,'apply'] == 'Yes':
