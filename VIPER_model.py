@@ -287,12 +287,13 @@ def solve(dat):
                 else:
                     model += x[m][6+7*(w-2)]["RP1"] + x[m][6+7*(w-2)]["RP2"] + x[m][6+7*(w-2)]["SP1"] + x[m][6+7*(w-2)]["SP2"] + x[m][6+7*(w-1)]["RP1"] + x[m][6+7*(w-1)]["RP2"] + x[m][6+7*(w-1)]["SP1"] + x[m][6+7*(w-1)]["SP2"] <= 1
     
-    # [0190] SERGEANT – No 7am response shifts for Sergeants.
+    # [0190] SERGEANT – On weekdays no 7am response shifts for Sergeants.
     if rules.ix[settings.ix['unit','value']].ix[190,'apply'] == 'Yes':
         for m in members.index:
             if members.ix[m,'rank'] == "S":
-                for d in days.index:
-                    model += x[m][d]["RA1"] == 0
+                for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+                    for d in range(2,6+1):
+                        model += x[m][d+7*(w-1)]["RA1"] == 0
 
     # [0200] CREW – Morning and afternoon weekday response needs to have at least 3 members, but 4 is preferred.
     if rules.ix[settings.ix['unit','value']].ix[200,'apply'] == 'Yes':
