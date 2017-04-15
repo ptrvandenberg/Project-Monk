@@ -263,9 +263,9 @@ def solve(dat):
     # [0150] WEEKDAY – On weekdays the afternoon response 1300 shift only allowed if 700 next day.
     if rules.ix[settings.ix['unit','value']].ix[150,'apply'] == 'Yes':
         for m in members.index:
-            for d in days.index:
-                if d <> settings.ix['nbr_roster_weeks','value'] * 7:
-                    model += x[m][d]["RP1"] <= x[m][d+1]["RS"] + x[m][d+1]["RA1"]
+            for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+                for d in range(2,6+1):
+                    model += x[m][d+7*(w-1)]["RP1"] <= x[m][d+7*(w-1)+1]["RS"] + x[m][d+7*(w-1)+1]["RA1"]
     
     # [0170] FRIDAY AVO – Member are not allowed to be rostered on Friday afternoon shift and Saturday morning or afternoon shift.
     if rules.ix[settings.ix['unit','value']].ix[170,'apply'] == 'Yes':
