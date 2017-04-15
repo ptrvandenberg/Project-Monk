@@ -345,7 +345,24 @@ def solve(dat):
     
     if LpStatus[model.status] == 'Infeasible':
         print("< < < Optimisation completed, infeasible > > >")
-        roster = {}
+#        roster = {}
+        roster = predetermined.copy()
+        for v in model.variables():
+            if v.name[0:2] == "x_" and v.varValue == 1:
+                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
+                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
+                s = v.name[v.name.find("_s")+2:]
+                roster.ix[m,int(d)-1] = s
+    elif LpStatus[model.status] == 'Undefined':
+        print("< < < Optimisation completed, undefined > > >")
+#        roster = {}
+        roster = predetermined.copy()
+        for v in model.variables():
+            if v.name[0:2] == "x_" and v.varValue == 1:
+                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
+                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
+                s = v.name[v.name.find("_s")+2:]
+                roster.ix[m,int(d)-1] = s
     elif LpStatus[model.status] == 'Optimal':
         print("< < < Optimisation completed, codifying roster > > >")
         roster = predetermined.copy()
