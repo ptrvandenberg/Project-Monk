@@ -240,7 +240,8 @@ def solve(dat):
                 model += lpSum([x[m][d+7*(w-1)]["RA2"] for m in members.index]) == 0
                 model += lpSum([x[m][d+7*(w-1)]["RA3"] for m in members.index]) == 1
                 model += lpSum([x[m][d+7*(w-1)]["RP1"] for m in members.index]) == 2
-                model += lpSum([x[m][d+7*(w-1)]["SAM"] for m in members.index]) == 0
+                model += lpSum([x[m][d+7*(w-1)]["SA1"] for m in members.index]) == 0
+                model += lpSum([x[m][d+7*(w-1)]["SA2"] for m in members.index]) == 0
                 model += lpSum([x[m][d+7*(w-1)]["RP2"] for m in members.index]) == 0
                 model += lpSum([x[m][d+7*(w-1)]["SP1"] for m in members.index]) == 0
                 model += lpSum([x[m][d+7*(w-1)]["SP2"] for m in members.index]) == 0
@@ -272,7 +273,7 @@ def solve(dat):
     if rules.ix[settings.ix['unit','value']].ix[170,'apply'] == 'Yes':
         for m in members.index:
             for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
-                model += x[m][6+7*(w-1)]["RP1"] + x[m][6+7*(w-1)]["RP2"] + x[m][6+7*(w-1)]["SP1"] + x[m][6+7*(w-1)]["SP2"] + x[m][7+7*(w-1)]["RA1"] + x[m][7+7*(w-1)]["RA2"] + x[m][7+7*(w-1)]["RA3"] + x[m][7+7*(w-1)]["SAM"] + x[m][7+7*(w-1)]["RP1"] + x[m][7+7*(w-1)]["RP2"] + x[m][7+7*(w-1)]["SP1"] + x[m][7+7*(w-1)]["SP2"] <= 1
+                model += x[m][6+7*(w-1)]["RP1"] + x[m][6+7*(w-1)]["RP2"] + x[m][6+7*(w-1)]["SP1"] + x[m][6+7*(w-1)]["SP2"] + x[m][7+7*(w-1)]["RA1"] + x[m][7+7*(w-1)]["RA2"] + x[m][7+7*(w-1)]["RA3"] + x[m][7+7*(w-1)]["SA1"] + x[m][7+7*(w-1)]["SA2"] + x[m][7+7*(w-1)]["RP1"] + x[m][7+7*(w-1)]["RP2"] + x[m][7+7*(w-1)]["SP1"] + x[m][7+7*(w-1)]["SP2"] <= 1
     
     # [0180] FRIDAY AVO – Members are not allowed to be rostered on Friday afternoon shifts two consecutive weeks.
     if rules.ix[settings.ix['unit','value']].ix[180,'apply'] == 'Yes':
@@ -308,13 +309,13 @@ def solve(dat):
                 crew_pm_bin1[d+7*(w-1)] + crew_pm_bin2[d+7*(w-1)] + crew_pm_bin3[d+7*(w-1)] == 1
                 for m in members.index:
                     if members.ix[m,'crew'] == 1:
-                        crew_am_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SAM"]
+                        crew_am_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SA1"] + x[m][d+7*(w-1)]["SA2"]
                         crew_pm_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
                     if members.ix[m,'crew'] == 2:
-                        crew_am_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SAM"]
+                        crew_am_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SA1"] + x[m][d+7*(w-1)]["SA2"]
                         crew_pm_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
                     if members.ix[m,'crew'] == 3:
-                        crew_am_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SAM"]
+                        crew_am_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SA1"] + x[m][d+7*(w-1)]["SA2"]
                         crew_pm_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
         
     # [0220] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
