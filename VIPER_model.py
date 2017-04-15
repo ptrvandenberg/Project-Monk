@@ -291,7 +291,7 @@ def solve(dat):
                     for d in range(2,6+1):
                         model += x[m][d+7*(w-1)]["RA1"] == 0
 
-    # [0200] CREW – Morning and afternoon weekday response needs to have at least 3 members, but 4 is preferred.
+    # [0200] CREW – On weekdays morning and afternoon response needs to have at least 3 members, but 4 is preferred.
     if rules.ix[settings.ix['unit','value']].ix[200,'apply'] == 'Yes':
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             for d in range(2,6+1):
@@ -300,7 +300,7 @@ def solve(dat):
                 model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) >= 3
                 model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) <= 4
     
-    # [0210] CREW – Morning and afternoon (except 1700) weekday response and station have to be from the same crew.
+    # [0210] CREW – On weekdays morning and afternoon (except 1700) response and station have to be from the same crew.
     if rules.ix[settings.ix['unit','value']].ix[210,'apply'] == 'Yes':
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             for d in range(2,6+1):
