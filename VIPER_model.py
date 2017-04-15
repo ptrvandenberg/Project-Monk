@@ -239,10 +239,10 @@ def solve(dat):
                 model += lpSum([x[m][d+7*(w-1)]["RA1"] for m in members.index]) == 1
                 model += lpSum([x[m][d+7*(w-1)]["RA2"] for m in members.index]) == 0
                 model += lpSum([x[m][d+7*(w-1)]["RA3"] for m in members.index]) == 1
-                model += lpSum([x[m][d+7*(w-1)]["RP1"] for m in members.index]) == 2
+                model += lpSum([x[m][d+7*(w-1)]["RP1"] for m in members.index]) == 0
+                model += lpSum([x[m][d+7*(w-1)]["RP2"] for m in members.index]) == 2
                 model += lpSum([x[m][d+7*(w-1)]["SA1"] for m in members.index]) == 0
                 model += lpSum([x[m][d+7*(w-1)]["SA2"] for m in members.index]) == 0
-                model += lpSum([x[m][d+7*(w-1)]["RP2"] for m in members.index]) == 0
                 model += lpSum([x[m][d+7*(w-1)]["SP1"] for m in members.index]) == 0
                 model += lpSum([x[m][d+7*(w-1)]["SP2"] for m in members.index]) == 0
     
