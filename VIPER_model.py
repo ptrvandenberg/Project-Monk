@@ -255,14 +255,10 @@ def solve(dat):
     # [0140] WEEKDAY – On weekdays the morning response 900 and station 900 shifts only allowed if 1500 day before.
     if rules.ix[settings.ix['unit','value']].ix[140,'apply'] == 'Yes':
         for m in members.index:
-            for d in days.index:
-                if d == 1:
-                    if carryover.ix[m,'d0_shift'] <> "RP2" and carryover.ix[m,'d0_shift'] <> "SP1":
-                        model += x[m][d]["RA3"] == 0
-                        model += x[m][d]["SA2"] == 0
-                else:
-                    model += x[m][d]["RA3"] <= x[m][d-1]["RP2"] + x[m][d-1]["SP1"]
-                    model += x[m][d]["SA2"] <= x[m][d-1]["RP2"] + x[m][d-1]["SP1"]
+            for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+                for d in range(2,6+1):
+                    model += x[m][d+7*(w-1)]["RA3"] <= x[m][d+7*(w-1)-1]["RP2"] + x[m][d+7*(w-1)-1]["SP1"]
+                    model += x[m][d+7*(w-1)]["SA2"] <= x[m][d+7*(w-1)-1]["RP2"] + x[m][d+7*(w-1)-1]["SP1"]
 
     # [0150] WEEKDAY – On weekdays the afternoon response 1300 shift only allowed if 700 next day.
     if rules.ix[settings.ix['unit','value']].ix[150,'apply'] == 'Yes':
