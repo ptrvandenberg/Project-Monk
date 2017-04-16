@@ -321,16 +321,17 @@ def solve(dat):
 #                        crew_pm_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
     
     # [0220] ...
+#    if rules.ix[settings.ix['unit','value']].ix[220,'apply'] == 'Yes':
     
     # [0230] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
-    if rules.ix[settings.ix['unit','value']].ix[220,'apply'] == 'Yes':
+    if rules.ix[settings.ix['unit','value']].ix[230,'apply'] == 'Yes':
         for d in days.index:
             for s in ("RP1","RP2","SP1","SP2"):
                 if predetermined.ix["VP34315",d-1] <> s:
                     model += x["VP34315"][d][s] == 0
     
     # [0240] MEMBER – Spencer no 7am shift unless pre-determined.
-    if rules.ix[settings.ix['unit','value']].ix[230,'apply'] == 'Yes':
+    if rules.ix[settings.ix['unit','value']].ix[240,'apply'] == 'Yes':
         for d in days.index:
             if predetermined.ix["VP33968",d-1] <> "RA1":
                 model += x["VP33968"][d]["RA1"] == 0
