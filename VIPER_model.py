@@ -81,12 +81,12 @@ def solve(dat):
     RN_bin5 = LpVariable.dicts("NG_bin5_%s", members.index, 0, 1, LpBinary)
     RN_bin8 = LpVariable.dicts("NG_bin8_%s", members.index, 0, 1, LpBinary)
     eor = LpVariable.dicts("eor_%s_%s", (members.index, days.index), 0, 1, LpBinary)
-    crew_am_bin1 = LpVariable.dicts("crew_am_bin1_%s", days.index, 0, 1, LpBinary)
-    crew_am_bin2 = LpVariable.dicts("crew_am_bin2_%s", days.index, 0, 1, LpBinary)
-    crew_am_bin3 = LpVariable.dicts("crew_am_bin3_%s", days.index, 0, 1, LpBinary)
-    crew_pm_bin1 = LpVariable.dicts("crew_pm_bin1_%s", days.index, 0, 1, LpBinary)
-    crew_pm_bin2 = LpVariable.dicts("crew_pm_bin2_%s", days.index, 0, 1, LpBinary)
-    crew_pm_bin3 = LpVariable.dicts("crew_pm_bin3_%s", days.index, 0, 1, LpBinary)
+#    crew_am_bin1 = LpVariable.dicts("crew_am_bin1_%s", days.index, 0, 1, LpBinary)
+#    crew_am_bin2 = LpVariable.dicts("crew_am_bin2_%s", days.index, 0, 1, LpBinary)
+#    crew_am_bin3 = LpVariable.dicts("crew_am_bin3_%s", days.index, 0, 1, LpBinary)
+#    crew_pm_bin1 = LpVariable.dicts("crew_pm_bin1_%s", days.index, 0, 1, LpBinary)
+#    crew_pm_bin2 = LpVariable.dicts("crew_pm_bin2_%s", days.index, 0, 1, LpBinary)
+#    crew_pm_bin3 = LpVariable.dicts("crew_pm_bin3_%s", days.index, 0, 1, LpBinary)
     
     # [0000] OBJECTIVE – Set the objective.
     if rules.ix[settings.ix['unit','value']].ix[0,'apply'] == 'Yes':
@@ -300,22 +300,25 @@ def solve(dat):
                 model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) >= 3
                 model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) <= 4
     
-    # [0210] CREW – On weekdays, morning and afternoon (except 1700) response and station have to be from the same crew.
+    # [0210] CREW – On weekdays, both morning and afternoon response shifts each have to be from the same crew.
     if rules.ix[settings.ix['unit','value']].ix[210,'apply'] == 'Yes':
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             for d in range(2,6+1):
-                crew_am_bin1[d+7*(w-1)] + crew_am_bin2[d+7*(w-1)] + crew_am_bin3[d+7*(w-1)] == 1
-                crew_pm_bin1[d+7*(w-1)] + crew_pm_bin2[d+7*(w-1)] + crew_pm_bin3[d+7*(w-1)] == 1
-                for m in members.index:
-                    if members.ix[m,'crew'] == 1:
-                        crew_am_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SA1"] + x[m][d+7*(w-1)]["SA2"]
-                        crew_pm_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
-                    if members.ix[m,'crew'] == 2:
-                        crew_am_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SA1"] + x[m][d+7*(w-1)]["SA2"]
-                        crew_pm_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
-                    if members.ix[m,'crew'] == 3:
-                        crew_am_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SA1"] + x[m][d+7*(w-1)]["SA2"]
-                        crew_pm_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
+                for c in range(1,3+1):
+                    model += lpSum([x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] for m in members.index]) = lpSum([x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] for m in members.index if  members.ix[m,'crew'] == c])
+                    model += lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index]) = lpSum([x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] for m in members.index if  members.ix[m,'crew'] == c])
+#                crew_am_bin1[d+7*(w-1)] + crew_am_bin2[d+7*(w-1)] + crew_am_bin3[d+7*(w-1)] == 1
+#                crew_pm_bin1[d+7*(w-1)] + crew_pm_bin2[d+7*(w-1)] + crew_pm_bin3[d+7*(w-1)] == 1
+#                for m in members.index:
+#                    if members.ix[m,'crew'] == 1:
+#                        crew_am_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SA1"] + x[m][d+7*(w-1)]["SA2"]
+#                        crew_pm_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
+#                    if members.ix[m,'crew'] == 2:
+#                        crew_am_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SA1"] + x[m][d+7*(w-1)]["SA2"]
+#                        crew_pm_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
+#                    if members.ix[m,'crew'] == 3:
+#                        crew_am_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SA1"] + x[m][d+7*(w-1)]["SA2"]
+#                        crew_pm_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
     
     # [0220] ...
     
