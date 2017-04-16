@@ -167,6 +167,8 @@ def solve(dat):
 
             if carryover.ix[m,'w0_nights'] == 4 and carryover.ix[m,'d0_shift'] == "RN":
                 model += eor[m][4] == x[m][1]["RN"]
+            else:
+                model += eor[m][4] == 0
 
             for w in range(1,settings.ix['nbr_roster_weeks','value']):
                 model += eor[m][5+7*(w-1)] >= lpSum([x[m][d]["RN"] for d in range(1+7*(w-1),5+7*(w-1))]) / 4 + (1 - x[m][5+7*(w-1)]["RN"]) - 1
