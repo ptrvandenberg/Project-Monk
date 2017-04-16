@@ -306,18 +306,18 @@ def solve(dat):
     if rules.ix[settings.ix['unit','value']].ix[210,'apply'] == 'Yes':
         for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
             for d in range(2,6+1):
-                crew_am_bin1[d+7*(w-1)] + crew_am_bin2[d+7*(w-1)] + crew_am_bin3[d+7*(w-1)] == 1
-                crew_pm_bin1[d+7*(w-1)] + crew_pm_bin2[d+7*(w-1)] + crew_pm_bin3[d+7*(w-1)] == 1
+                model += crew_am_bin1[d+7*(w-1)] + crew_am_bin2[d+7*(w-1)] + crew_am_bin3[d+7*(w-1)] == 1
+                model += crew_pm_bin1[d+7*(w-1)] + crew_pm_bin2[d+7*(w-1)] + crew_pm_bin3[d+7*(w-1)] == 1
                 for m in members.index:
                     if members.ix[m,'crew'] == 1:
-                        crew_am_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"]
-                        crew_pm_bin1[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"]
+                        model += x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] <= crew_am_bin1[d+7*(w-1)]
+                        model += x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] <= crew_pm_bin1[d+7*(w-1)]
                     if members.ix[m,'crew'] == 2:
-                        crew_am_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"]
-                        crew_pm_bin2[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"]
+                        model += x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] <= crew_am_bin2[d+7*(w-1)]
+                        model += x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] <= crew_pm_bin2[d+7*(w-1)]
                     if members.ix[m,'crew'] == 3:
-                        crew_am_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"]
-                        crew_pm_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"]
+                        model += x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] <= crew_am_bin3[d+7*(w-1)]
+                        model += x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] <= crew_pm_bin3[d+7*(w-1)]
     
     # [0220] ...
 #    if rules.ix[settings.ix['unit','value']].ix[220,'apply'] == 'Yes':
