@@ -316,15 +316,17 @@ def solve(dat):
                     if members.ix[m,'crew'] == 3:
                         crew_am_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] + x[m][d+7*(w-1)]["SA1"] + x[m][d+7*(w-1)]["SA2"]
                         crew_pm_bin3[d+7*(w-1)] >= x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] + x[m][d+7*(w-1)]["SP1"]
-        
-    # [0220] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
+    
+    # [0220] ...
+    
+    # [0230] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
     if rules.ix[settings.ix['unit','value']].ix[220,'apply'] == 'Yes':
         for d in days.index:
             for s in ("RP1","RP2","SP1","SP2"):
                 if predetermined.ix["VP34315",d-1] <> s:
                     model += x["VP34315"][d][s] == 0
     
-    # [0230] MEMBER - MEMBER – Spencer no 7am shift unless pre-determined.
+    # [0240] MEMBER - MEMBER – Spencer no 7am shift unless pre-determined.
     if rules.ix[settings.ix['unit','value']].ix[230,'apply'] == 'Yes':
         for d in days.index:
             if predetermined.ix["VP33968",d-1] <> "RA1":
