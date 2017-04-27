@@ -14,7 +14,7 @@ def validate_input(dat):
     
     # Input test 1: Weeks = 2 (model only designed for this)
 
-    if dat.parse('period', index_col = 'period_id').loc[dat.parse('settings', index_col = 'parameter').loc['period_id', 'value'], 'weeks'] <> 2:
+    if dat.parse('periods', index_col = 'period_id').loc[dat.parse('settings', index_col = 'parameter').loc['period_id', 'value'], 'weeks'] <> 2:
         rtn['Test 1 - Weeks'] = 'value <> 2'
     
     return rtn
