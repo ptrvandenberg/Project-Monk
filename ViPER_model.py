@@ -1,7 +1,7 @@
 # ViPER: Victoria Police Electronic Rostering
 # Copyright 2017, Peter van den Berg
 
-# Project Monk: SOCAU Fawkner
+# Project Monk: SOCIT Fawkner
 # This file implements a function [solve] that formulates and solves the model as well as codifies the resulting roster
 
 # Import dependencies
