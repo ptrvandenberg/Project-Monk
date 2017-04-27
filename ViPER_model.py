@@ -40,7 +40,7 @@ def solve(dat):
     shortshifts = dat.parse('shortshifts')
     shortshifts = shortshifts.set_index(['member_id','period_id'])
     longshifts = dat.parse('longshifts')
-    longshifts = longshift.set_index(['member_id','longshift'])
+    longshifts = longshifts.set_index(['member_id','longshift'])
 
     # Pre-process input data
 
