@@ -30,19 +30,23 @@ def solve(dat):
 
     # Parse input data
     settings = dat.parse('settings', index_col = 'parameter')
-    rules = dat.parse('rules')
-    rules = rules.set_index(['unit','rule'])
-    members = dat.parse('members', index_col = 'memid')
-    days = dat.parse('days', index_col = 'dayseq')
-    shifts = dat.parse('shifts', index_col = 'shiftcd')    
-    carryover = dat.parse('carryover', index_col = 'memid')
-    longshift = dat.parse('longshift')
-    longshift = longshift.set_index(['memid','roster'])
-    shortshift = dat.parse('shortshift', index_col = 'memid')
-#    restricted = dat.parse('restricted')
-#    restricted = restricted.set_index(['memid','dayseq','shiftcd'])
+    units = dat.parse('units', index_col = 'unit_id')
+    periods = dat.parse('periods', index_col = 'period_id')
+    rosters = dat.parse('rosters')
+    rosters = rosters.set_index(['member_id','period_id'])
+    rules = dat.parse('rules', index_col = 'rule_id')
+    members = dat.parse('members', index_col = 'member_id')
+    shifts = dat.parse('shifts', index_col = 'shift_id')    
+    shortshifts = dat.parse('shortshift')
+    shortshifts = shortshifts.set_index(['member_id','period_id'])
+    longshifts = dat.parse('longshift')
+    longshifts = longshift.set_index(['member_id','longshift'])
 
-    # Preprocess input data
+    # Pre-process input data
+
+    days = range(1, periods.ix[settings.ix['period_id','value'],'weeks'] * 7 + 1)
+    
+    # Consolidate predetermined long- and shortshifts
     predetermined = shortshift.copy()
     
     for m in members.index:
