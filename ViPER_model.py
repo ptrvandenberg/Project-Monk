@@ -1,4 +1,4 @@
-# VIPER: VIctoria Police Electronic Rostering
+# ViPER: Victoria Police Electronic Rostering
 # Copyright 2017, Peter van den Berg
 
 # Project Monk: SOCAU Fawkner
