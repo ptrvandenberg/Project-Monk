@@ -12,18 +12,10 @@ from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpContinuous, LpInteg
 def validate_input(dat):
     rtn = {}
     
-    # Input test 0: Settings
+    # Input test 1: Weeks = 2 (model only designed for this)
 
-    # nbr_roster_weeks
-    if 'nbr_roster_weeks' not in (param for param in dat.parse('settings')['parameter']):
-        rtn['Test 0 - Setting / Weeks'] = 'parameter missing'
-    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] <= 0:
-        rtn['Test 0 - Setting / Weeks'] = 'value <= 0'
-    elif dat.parse('settings', index_col = 'parameter').loc['nbr_roster_weeks', 'value'] % 1 <> 0:
-        rtn["Test 0 - Setting / Weeks"] = 'value not integer'
-    
-    # Weeks = 2 (model only designed for this)
-    # Carry-in rest=[0,1,2]
+    if dat.parse('period', index_col = 'roster_id').loc[dat.parse('settings', index_col = 'parameter').loc['roster_id', 'value'], 'weeks'] <> 2:
+        rtn['Test 1 - Weeks'] = 'value <> 2'
     
     return rtn
     
