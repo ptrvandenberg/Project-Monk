@@ -37,9 +37,9 @@ def solve(dat):
     rules = dat.parse('rules', index_col = 'rule_id')
     members = dat.parse('members', index_col = 'member_id')
     shifts = dat.parse('shifts', index_col = 'shift_id')    
-    shortshifts = dat.parse('shortshift')
+    shortshifts = dat.parse('shortshifts')
     shortshifts = shortshifts.set_index(['member_id','period_id'])
-    longshifts = dat.parse('longshift')
+    longshifts = dat.parse('longshifts')
     longshifts = longshift.set_index(['member_id','longshift'])
 
     # Pre-process input data
