@@ -46,29 +46,34 @@ def solve(dat):
 
     days = range(1, periods.ix[settings.ix['period_id','value'],'weeks'] * 7 + 1)
     
+#    carryover = fy_2d_off, fy_we_off, d0_shift, w0_nights, w0_fri_shift, r0_rests, r0_longshift
+
+#    shortshift = shortshifts for current period_id
+
     # Consolidate predetermined long- and shortshifts
+    
     predetermined = shortshift.copy()
     
     for m in members.index:
-        for d in days.index:
+        for d in days:
             if isnull(predetermined.ix[m,d-1]):
                 if members.ix[m,'longshift'] == 1:
-                    if not isnull(longshift.ix[m].ix[1,d-1]):
-                        predetermined.ix[m,d-1] = longshift.ix[m].ix[1,d-1]
+                    if not isnull(longshifts.ix[m].ix[1,d-1]):
+                        predetermined.ix[m,d-1] = longshifts.ix[m].ix[1,d-1]
                 elif members.ix[m,'longshift'] > 1:
                     if carryover.ix[m,'r0_longshift'] < members.ix[m,'longshift']:
-                        if not isnull(longshift.ix[m].ix[carryover.ix[m,'r0_longshift']+1, d-1]):
-                            predetermined.ix[m,d-1] = longshift.ix[m].ix[carryover.ix[m,'r0_longshift']+1, d-1]
+                        if not isnull(longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1, d-1]):
+                            predetermined.ix[m,d-1] = longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1, d-1]
                     else:
-                        if not isnull(longshift.ix[m].ix[1,d-1]):
-                            predetermined.ix[m,d-1] = longshift.ix[m].ix[1,d-1]
+                        if not isnull(longshifts.ix[m].ix[1,d-1]):
+                            predetermined.ix[m,d-1] = longshifts.ix[m].ix[1,d-1]
 
     # [0000] OBJECTIVE – Commence model definition and set optimisation direction.
     if rules.ix[settings.ix['unit','value']].ix[0,'apply'] == 'Yes':
         model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
-    x = LpVariable.dicts("x_m%s_d%s_s%s", (members.index, days.index, shifts.index), 0, 1, LpBinary)
+    x = LpVariable.dicts("x_m%s_d%s_s%s", (members.index, days, shifts.index), 0, 1, LpBinary)
     
     # Create and define the additional variables
     r2_rests = LpVariable.dicts("r2_rests_%s", members.index, 0, 2, LpInteger)
@@ -76,13 +81,13 @@ def solve(dat):
     RN_bin4 = LpVariable.dicts("NG_bin4_%s", members.index, 0, 1, LpBinary)
     RN_bin5 = LpVariable.dicts("NG_bin5_%s", members.index, 0, 1, LpBinary)
     RN_bin8 = LpVariable.dicts("NG_bin8_%s", members.index, 0, 1, LpBinary)
-    eor = LpVariable.dicts("eor_%s_%s", (members.index, days.index), 0, 1, LpBinary)
-    crew_am_bin1 = LpVariable.dicts("crew_am_bin1_%s", days.index, 0, 1, LpBinary)
-    crew_am_bin2 = LpVariable.dicts("crew_am_bin2_%s", days.index, 0, 1, LpBinary)
-    crew_am_bin3 = LpVariable.dicts("crew_am_bin3_%s", days.index, 0, 1, LpBinary)
-    crew_pm_bin1 = LpVariable.dicts("crew_pm_bin1_%s", days.index, 0, 1, LpBinary)
-    crew_pm_bin2 = LpVariable.dicts("crew_pm_bin2_%s", days.index, 0, 1, LpBinary)
-    crew_pm_bin3 = LpVariable.dicts("crew_pm_bin3_%s", days.index, 0, 1, LpBinary)
+    eor = LpVariable.dicts("eor_%s_%s", (members.index, days), 0, 1, LpBinary)
+    crew_am_bin1 = LpVariable.dicts("crew_am_bin1_%s", days, 0, 1, LpBinary)
+    crew_am_bin2 = LpVariable.dicts("crew_am_bin2_%s", days, 0, 1, LpBinary)
+    crew_am_bin3 = LpVariable.dicts("crew_am_bin3_%s", days, 0, 1, LpBinary)
+    crew_pm_bin1 = LpVariable.dicts("crew_pm_bin1_%s", days, 0, 1, LpBinary)
+    crew_pm_bin2 = LpVariable.dicts("crew_pm_bin2_%s", days, 0, 1, LpBinary)
+    crew_pm_bin3 = LpVariable.dicts("crew_pm_bin3_%s", days, 0, 1, LpBinary)
     
     # [0000] OBJECTIVE – Set the objective.
     if rules.ix[settings.ix['unit','value']].ix[0,'apply'] == 'Yes':
