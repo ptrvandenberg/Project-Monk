@@ -66,6 +66,8 @@ def solve(dat):
                         ignore_index=True)
     carryover = carryover.set_index(['member_id'])
     
+    print carryover
+    
 #    shortshift = shortshifts for current period_id
 
     # Consolidate predetermined long- and shortshifts
