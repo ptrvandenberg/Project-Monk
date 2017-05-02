@@ -67,10 +67,6 @@ def solve(dat):
     carryover = carryover.set_index(['member_id'])
     
     shortshift = shortshifts.xs(period, level='period_id')
-
-    print roster0
-    print carryover
-    print shortshift
     
     # Consolidate predetermined long- and shortshifts
     
@@ -78,17 +74,17 @@ def solve(dat):
     
     for m in members.index:
         for d in days:
-            if isnull(predetermined.ix[m,d-1]):
-                if members.ix[m,'longshift'] == 1:
-                    if not isnull(longshifts.ix[m].ix[1,d-1]):
-                        predetermined.ix[m,d-1] = longshifts.ix[m].ix[1,d-1]
-                elif members.ix[m,'longshift'] > 1:
-                    if carryover.ix[m,'r0_longshift'] < members.ix[m,'longshift']:
-                        if not isnull(longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1, d-1]):
-                            predetermined.ix[m,d-1] = longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1, d-1]
+            if isnull(predetermined.ix[m,d]):
+                if members.ix[m,'longshifts'] == 1:
+                    if not isnull(longshifts.ix[m].ix[1,d]):
+                        predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
+                elif members.ix[m,'longshifts'] > 1:
+                    if carryover.ix[m,'r0_longshift'] < members.ix[m,'longshifts']:
+                        if not isnull(longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1,d]):
+                            predetermined.ix[m,d] = longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1,d]
                     else:
-                        if not isnull(longshifts.ix[m].ix[1,d-1]):
-                            predetermined.ix[m,d-1] = longshifts.ix[m].ix[1,d-1]
+                        if not isnull(longshifts.ix[m].ix[1,d1]):
+                            predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
 
     # [0000] OBJECTIVE – Commence model definition and set optimisation direction.
     if rules.ix[settings.ix['unit','value']].ix[0,'apply'] == 'Yes':
