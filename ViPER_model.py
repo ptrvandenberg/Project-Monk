@@ -5,7 +5,7 @@
 # This file implements a function [solve] that formulates and solves the model as well as codifies the resulting roster
 
 # Import dependencies
-from pandas import ExcelFile, isnull
+from pandas import DataFrame, ExcelFile, isnull
 from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpContinuous, LpInteger, LpBinary, LpStatus, value
 
 # Validate input data (including keys, data types)
@@ -42,12 +42,30 @@ def solve(dat):
     longshifts = dat.parse('longshifts')
     longshifts = longshifts.set_index(['member_id','longshift'])
 
+    # Parameters
+    
+    unit = settings.ix['unit_id','value']
+    period = settings.ix['period_id','value']
+    weeks = periods.ix[period,'weeks']
+    
     # Pre-process input data
 
-    days = range(1, periods.ix[settings.ix['period_id','value'],'weeks'] * 7 + 1)
+    days = range(1, weeks * 7 + 1)
     
-#    carryover = fy_2d_off, fy_we_off, d0_shift, w0_nights, w0_fri_shift, r0_rests, r0_longshift
-
+    carryover = DataFrame(columns=['member_id','fy_2d_off','fy_we_off','d0_shift','w0_nights','w0_fri_shift','r0_rests','r0_longshift'])
+    roster0 = rosters.xs(periods.index.values[periods.index.get_loc(period)-1], level='period_id')
+    for m in members.index:
+        if members.ix[m,'unit_id'] == unit:
+            carryover = carryover.append({
+                            'member_id': m,
+                            'd0_shift': roster0.ix[m,'d14'],
+                            'w0_nights': (roster0.ix[m,'d8']=='RN')+(roster0.ix[m,'d9']=='RN')+(roster0.ix[m,'d10']=='RN')+(roster0.ix[m,'d11']=='RN')+(roster0.ix[m,'d12']=='RN')+(roster0.ix[m,'d13']=='RN')+(roster0.ix[m,'d14']=='RN'),
+                            'w0_fri_shift': roster0.ix[m,'d13'],
+                            'r0_rests': (roster0.ix[m,'d1']=='XR')+(roster0.ix[m,'d2']=='XR')+(roster0.ix[m,'d3']=='XR')+(roster0.ix[m,'d4']=='XR')+(roster0.ix[m,'d5']=='XR')+(roster0.ix[m,'d6']=='XR')+(roster0.ix[m,'d7']=='XR')+(roster0.ix[m,'d8']=='XR')+(roster0.ix[m,'d9']=='XR')+(roster0.ix[m,'d10']=='XR')+(roster0.ix[m,'d11']=='XR')+(roster0.ix[m,'d12']=='XR')+(roster0.ix[m,'d13']=='XR')+(roster0.ix[m,'d14']=='XR'),
+                            'r0_longshift': roster0.ix[m,'longshift']},
+                        ignore_index=True)
+    carryover = carryover.set_index(['member_id'])
+    
 #    shortshift = shortshifts for current period_id
 
     # Consolidate predetermined long- and shortshifts
