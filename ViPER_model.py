@@ -83,7 +83,7 @@ def solve(dat):
                         if not isnull(longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1,d]):
                             predetermined.ix[m,d] = longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1,d]
                     else:
-                        if not isnull(longshifts.ix[m].ix[1,d1]):
+                        if not isnull(longshifts.ix[m].ix[1,d]):
                             predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
 
     # [0000] OBJECTIVE – Commence model definition and set optimisation direction.
