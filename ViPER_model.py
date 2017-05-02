@@ -66,10 +66,12 @@ def solve(dat):
                         ignore_index=True)
     carryover = carryover.set_index(['member_id'])
     
-    print carryover
-    
-#    shortshift = shortshifts for current period_id
+    shortshift = shortshifts.xs(period, level='period_id')
 
+    print roster0
+    print carryover
+    print shortshift
+    
     # Consolidate predetermined long- and shortshifts
     
     predetermined = shortshift.copy()
