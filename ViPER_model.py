@@ -109,14 +109,14 @@ def solve(dat):
     
     # [0000] OBJECTIVE – Set the objective.
     if rules.ix[0, unit] == 'Yes':
-        model += lpSum([x[m][d][s] * 1 for m in members.index for d in days.index for s in shifts.index if members.ix[m,'rank']<>"S" and s in ("RA1","RA2","RA3","RP1","RP2")]) + lpSum([x[m][d][s] * 2 for m in members.index for d in days.index for s in shifts.index if members.ix[m,'rank']=="S" and s in ("RA1","RA2","RA3","RP1","RP2")]) + lpSum([x[m][d][s] for m in members.index for d in days.index for s in shifts.index if s in ("RS","RN")])
+        model += lpSum([x[m][d][s] * 1 for m in members.index for d in days for s in shifts.index if members.ix[m,'rank']<>"S" and s in ("RA1","RA2","RA3","RP1","RP2")]) + lpSum([x[m][d][s] * 2 for m in members.index for d in days for s in shifts.index if members.ix[m,'rank']=="S" and s in ("RA1","RA2","RA3","RP1","RP2")]) + lpSum([x[m][d][s] for m in members.index for d in days for s in shifts.index if s in ("RS","RN")])
     
     # STRUCTURAL CONSTRAINTS
 
     # [0010] SHIFTS – Each member on each day has to be assigned to one and only one shift, including part-time, rest and leave shifts.
     if rules.ix[10, unit] == 'Yes':
         for m in members.index:
-            for d in days.index:
+            for d in days:
                 model += lpSum([x[m][d][s] for s in shifts.index]) == 1
 
     # INPUT CONSTRAINTS
@@ -124,7 +124,7 @@ def solve(dat):
     # [0020] PREDETERMINED – Each member for each day is assigned their pre-determined shift if allocated; if not pre-determined then not rostered on pre-determined shifts.
     if rules.ix[20, unit] == 'Yes':
         for m in members.index:
-            for d in days.index:
+            for d in days:
                 if not isnull(predetermined.ix[m,d-1]):
                     model += x[m][d][predetermined.ix[m,d-1]] == 1
                 else:
@@ -137,22 +137,22 @@ def solve(dat):
     # [0030] FTE – Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift.
     if rules.ix[30, unit] == 'Yes':
         for m in members.index:
-            model += lpSum([x[m][d][s] for d in days.index for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte'] - carryover.ix[m,'r0_rests'] + r2_rests[m]
+            model += lpSum([x[m][d][s] for d in days for s in shifts.index if s <> "XP" and s <> "XR"]) == settings.ix['nbr_roster_weeks','value'] * 5 * members.ix[m,'fte'] - carryover.ix[m,'r0_rests'] + r2_rests[m]
     
     # [0040] REST – Each member needs to be assigned 2*weeks +/- carryover rest shifts.
     if rules.ix[40, unit] == 'Yes':
         for m in members.index:
-            model += lpSum([x[m][d]["XR"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
+            model += lpSum([x[m][d]["XR"] for d in days]) == settings.ix['nbr_roster_weeks','value'] * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
     
     # [0050] PART-TIME – Each member needs to be assigned to 5*(1-FTE)*weeks part-time shifts.
     if rules.ix[50, unit] == 'Yes':
         for m in members.index:
-            model += lpSum([x[m][d]["XP"] for d in days.index]) == settings.ix['nbr_roster_weeks','value'] * 5 * (1 - members.ix[m,'fte'])
+            model += lpSum([x[m][d]["XP"] for d in days]) == settings.ix['nbr_roster_weeks','value'] * 5 * (1 - members.ix[m,'fte'])
     
     # [0060] 10 HOURS – Each member needs to have at least 10 hours between shifts.
     if rules.ix[60, unit] == 'Yes':
         for m in members.index:
-            for d in days.index:
+            for d in days:
                 if d == 1:
                     model += lpSum([x[m][d][s] * shifts.ix[s,'starttime'] for s in shifts.index]) >=  shifts.ix[carryover.ix[m,'d0_shift'],'endtime'] + 10 - 24
                 else:
@@ -219,7 +219,7 @@ def solve(dat):
     # [0090] RECOVERY – Each member is assigned one recovery shift if they are eligible and work the following day; 0 if not.
     if rules.ix[90, unit] == 'Yes':
         for m in members.index:
-            for d in days.index:
+            for d in days:
                 if d <> settings.ix['nbr_roster_weeks','value'] * 7:
                     model += x[m][d]["OR"] <= eor[m][d]
                     model += x[m][d]["OR"] <= lpSum([x[m][d+1][s] for s in shifts.index if s not in ("XL","XP","XR")])
@@ -358,14 +358,14 @@ def solve(dat):
     
     # [0230] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
     if rules.ix[230, unit] == 'Yes':
-        for d in days.index:
+        for d in days:
             for s in ("RP1","RP2","SP1","SP2"):
                 if predetermined.ix["VP34315",d-1] <> s:
                     model += x["VP34315"][d][s] == 0
     
     # [0240] MEMBER – Spencer no 7am shift unless pre-determined.
     if rules.ix[240, unit] == 'Yes':
-        for d in days.index:
+        for d in days:
             if predetermined.ix["VP33968",d-1] <> "RA1":
                 model += x["VP33968"][d]["RA1"] == 0
     
