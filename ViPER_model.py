@@ -68,8 +68,8 @@ def solve(dat):
         
     # Consolidate predetermined long- and shortshifts
     
-    df_longshift = longshifts[longshifts['unit_id']=unit]
-    df_predetermined = shortshifts[shortshifts['unit_id']=unit].xs(period, level='period_id')
+    df_longshift = longshifts[longshifts['unit_id']==unit]
+    df_predetermined = shortshifts[shortshifts['unit_id']==unit].xs(period, level='period_id')
     
     for m in members.index:
         for d in days:
