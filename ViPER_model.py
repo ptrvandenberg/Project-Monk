@@ -53,7 +53,7 @@ def solve(dat):
     days = range(1, weeks * 7 + 1)
     
     carryover = DataFrame(columns=['member_id','fy_2d_off','fy_we_off','d0_shift','w0_nights','w0_fri_shift','r0_rests','r0_longshift'])
-    roster0 = rosters.xs(periods.index.values[periods.index.get_loc(period)-1], level='period_id')
+    roster0 = rosters[rosters['unit_id']==unit].xs(periods.index.values[periods.index.get_loc(period)-1], level='period_id')
     for m in members.index:
         if members.ix[m,'unit_id'] == unit:
             carryover = carryover.append({
