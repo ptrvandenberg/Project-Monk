@@ -87,7 +87,7 @@ def solve(dat):
                             predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
     
     # [0000] OBJECTIVE – Commence model definition and set optimisation direction.
-    if rules.ix[settings.ix['unit','value']].ix[0,'apply'] == 'Yes':
+    if rules.ix[0, unit] == 'Yes':
         model = LpProblem("roster", LpMaximize)
     
     # Create and define the problem variables
