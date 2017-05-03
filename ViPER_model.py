@@ -86,6 +86,8 @@ def solve(dat):
                         if not isnull(longshifts.ix[m].ix[1,d]):
                             predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
     
+    print predetermined
+    
     # [0000] OBJECTIVE – Commence model definition and set optimisation direction.
     if rules.ix[0, unit] == 'Yes':
         model = LpProblem("roster", LpMaximize)
