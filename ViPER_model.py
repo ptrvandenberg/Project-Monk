@@ -85,7 +85,8 @@ def solve(dat):
                     else:
                         if not isnull(longshifts.ix[m].ix[1,d]):
                             predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
-    
+    print roster0
+    print shortshift
     print predetermined
     
     # [0000] OBJECTIVE – Commence model definition and set optimisation direction.
