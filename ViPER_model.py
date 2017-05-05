@@ -38,6 +38,7 @@ def solve(dat):
     
     periods = dat.parse('periods', index_col = 'period_id')
     weeks = periods.ix[period,'weeks']
+    days = range(1, weeks * 7 + 1)
 
     rosters = dat.parse('rosters').query('unit_id == @unit')
     rosters = rosters.set_index(['member_id','period_id'])
@@ -54,42 +55,38 @@ def solve(dat):
     longshifts = dat.parse('longshifts').query('unit_id == @unit')
     longshifts = longshifts.set_index(['member_id','longshift'])
 
-    # Pre-process input data
-
-    days = range(1, weeks * 7 + 1)
+    # Pre-process input data [carryover]
     
-    df_carryover = DataFrame(columns=['member_id','fy_2d_off','fy_we_off','d0_shift','w0_nights','w0_fri_shift','r0_rests','r0_longshift'])
-    df_roster0 = rosters[rosters['unit_id']==unit].xs(periods.index.values[periods.index.get_loc(period)-1], level='period_id')
+    roster0 = rosters.xs(periods.index.values[periods.index.get_loc(period)-1], level='period_id')
+    carryover = DataFrame(columns=['member_id','fy_2d_off','fy_we_off','d0_shift','w0_nights','w0_fri_shift','r0_rests','r0_longshift'])
     for m in members.index:
-        if members.ix[m,'unit_id'] == unit:
-            df_carryover = df_carryover.append({
-                            'member_id': m,
-                            'd0_shift': df_roster0.ix[m,'d14'],
-                            'w0_nights': (df_roster0.ix[m,'d8']=='RN')+(df_roster0.ix[m,'d9']=='RN')+(df_roster0.ix[m,'d10']=='RN')+(df_roster0.ix[m,'d11']=='RN')+(df_roster0.ix[m,'d12']=='RN')+(df_roster0.ix[m,'d13']=='RN')+(df_roster0.ix[m,'d14']=='RN'),
-                            'w0_fri_shift': df_roster0.ix[m,'d13'],
-                            'r0_rests': (df_roster0.ix[m,'d1']=='XR')+(df_roster0.ix[m,'d2']=='XR')+(df_roster0.ix[m,'d3']=='XR')+(df_roster0.ix[m,'d4']=='XR')+(df_roster0.ix[m,'d5']=='XR')+(df_roster0.ix[m,'d6']=='XR')+(df_roster0.ix[m,'d7']=='XR')+(df_roster0.ix[m,'d8']=='XR')+(df_roster0.ix[m,'d9']=='XR')+(df_roster0.ix[m,'d10']=='XR')+(df_roster0.ix[m,'d11']=='XR')+(df_roster0.ix[m,'d12']=='XR')+(df_roster0.ix[m,'d13']=='XR')+(df_roster0.ix[m,'d14']=='XR'),
-                            'r0_longshift': df_roster0.ix[m,'longshift']},
-                        ignore_index=True)
-    df_carryover = df_carryover.set_index(['member_id'])
+        carryover = carryover.append({
+                        'member_id': m,
+                        'd0_shift': roster0.ix[m,'d14'],
+                        'w0_nights': (roster0.ix[m,'d8']=='RN')+(roster0.ix[m,'d9']=='RN')+(roster0.ix[m,'d10']=='RN')+(roster0.ix[m,'d11']=='RN')+(roster0.ix[m,'d12']=='RN')+(roster0.ix[m,'d13']=='RN')+(roster0.ix[m,'d14']=='RN'),
+                        'w0_fri_shift': roster0.ix[m,'d13'],
+                        'r0_rests': (roster0.ix[m,'d1']=='XR')+(roster0.ix[m,'d2']=='XR')+(roster0.ix[m,'d3']=='XR')+(roster0.ix[m,'d4']=='XR')+(roster0.ix[m,'d5']=='XR')+(roster0.ix[m,'d6']=='XR')+(roster0.ix[m,'d7']=='XR')+(roster0.ix[m,'d8']=='XR')+(roster0.ix[m,'d9']=='XR')+(roster0.ix[m,'d10']=='XR')+(roster0.ix[m,'d11']=='XR')+(roster0.ix[m,'d12']=='XR')+(roster0.ix[m,'d13']=='XR')+(roster0.ix[m,'d14']=='XR'),
+                        'r0_longshift': roster0.ix[m,'longshift']},
+                    ignore_index=True)
+    carryover = carryover.set_index(['member_id'])
         
     # Consolidate predetermined long- and shortshifts
     
-    df_longshift = longshifts[longshifts['unit_id']==unit]
-    df_predetermined = shortshifts[shortshifts['unit_id']==unit].xs(period, level='period_id')
+    predetermined = shortshifts.xs(period, level='period_id')
     
     for m in members.index:
         for d in days:
-            if isnull(df_predetermined.ix[m,d]):
+            if isnull(predetermined.ix[m,d]):
                 if members.ix[m,'longshifts'] == 1:
-                    if not isnull(df_longshift.ix[m].ix[1,d]):
-                        df_predetermined.ix[m,d] = df_longshift.ix[m].ix[1,d]
+                    if not isnull(longshifts.ix[m].ix[1,d]):
+                        predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
                 elif members.ix[m,'longshifts'] > 1:
-                    if df_carryover.ix[m,'r0_longshift'] < members.ix[m,'longshifts']:
-                        if not isnull(df_longshift.ix[m].ix[df_carryover.ix[m,'r0_longshift']+1,d]):
-                            df_predetermined.ix[m,d] = df_longshift.ix[m].ix[df_carryover.ix[m,'r0_longshift']+1,d]
+                    if carryover.ix[m,'r0_longshift'] < members.ix[m,'longshifts']:
+                        if not isnull(longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1,d]):
+                            predetermined.ix[m,d] = longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1,d]
                     else:
-                        if not isnull(df_longshift.ix[m].ix[1,d]):
-                            df_predetermined.ix[m,d] = df_longshift.ix[m].ix[1,d]
+                        if not isnull(longshifts.ix[m].ix[1,d]):
+                            predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
     
     print 'df_roster0'
     print df_roster0
