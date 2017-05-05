@@ -40,7 +40,7 @@ def solve(dat):
     weeks = periods.ix[period,'weeks']
     days = range(1, weeks * 7 + 1)
 
-    rosters = dat.parse('rosters').query('unit_id == @unit')
+    rosters = dat.parse('rosters').query('unit_id == @unit') # to be filtered for current FY only
     rosters = rosters.set_index(['member_id','period_id'])
     
     rules = dat.parse('rules', index_col = 'rule_id')
@@ -49,7 +49,7 @@ def solve(dat):
     
     shifts = dat.parse('shifts', index_col = 'shift_id')    
     
-    shortshifts = dat.parse('shortshifts').query('unit_id == @unit')
+    shortshifts = dat.parse('shortshifts').query('unit_id == @unit').query('period_id == @period')
     shortshifts = shortshifts.set_index(['member_id','period_id'])
     
     longshifts = dat.parse('longshifts').query('unit_id == @unit')
@@ -72,7 +72,7 @@ def solve(dat):
         
     # Consolidate predetermined long- and shortshifts
     
-    predetermined = shortshifts.xs(period, level='period_id')
+    predetermined = shortshifts.copy()
     
     for m in members.index:
         for d in days:
@@ -87,15 +87,20 @@ def solve(dat):
                     else:
                         if not isnull(longshifts.ix[m].ix[1,d]):
                             predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
-    
-    print 'df_roster0'
-    print df_roster0
-    print 'df_carryover'
-    print df_carryover
-    print 'df_longshift'
-    print df_longshift
-    print 'df_predetermined'
-    print df_predetermined
+    print 'members'
+    print members
+    print 'rosters'
+    print rosters
+    print 'roster0'
+    print roster0
+    print 'carryover'
+    print carryover
+    print 'shortshifts'
+    print shortshifts
+    print 'longshifts'
+    print longshifts
+    print 'predetermined'
+    print predetermined
     
     # [0000] OBJECTIVE – Commence model definition and set optimisation direction.
     if rules.ix[0, unit] == 'Yes':
