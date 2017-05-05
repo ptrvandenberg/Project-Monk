@@ -29,25 +29,24 @@ def solve(dat):
     print("< < < Inputs validated, formulating model > > >")
 
     # Parse input data
-    settings = dat.parse('settings', index_col = 'parameter')
-    units = dat.parse('units', index_col = 'unit_id')
-    periods = dat.parse('periods', index_col = 'period_id')
-    rosters = dat.parse('rosters')
-    rosters = rosters.set_index(['member_id','period_id'])
-    rules = dat.parse('rules', index_col = 'rule_id')
-    members = dat.parse('members', index_col = 'member_id')
-    shifts = dat.parse('shifts', index_col = 'shift_id')    
-    shortshifts = dat.parse('shortshifts')
-    shortshifts = shortshifts.set_index(['member_id','period_id'])
-    longshifts = dat.parse('longshifts')
-    longshifts = longshifts.set_index(['member_id','longshift'])
 
-    # Parameters
-    
+    settings = dat.parse('settings', index_col = 'parameter')
     unit = settings.ix['unit_id','value']
     period = settings.ix['period_id','value']
     weeks = periods.ix[period,'weeks']
-    
+
+    units = dat.parse('units', index_col = 'unit_id')
+    periods = dat.parse('periods', index_col = 'period_id')
+    rosters = dat.parse('rosters').query('unit_id == @unit')
+    rosters = rosters.set_index(['member_id','period_id'])
+    rules = dat.parse('rules', index_col = 'rule_id')
+    members = dat.parse('members', index_col = 'member_id').query('unit_id == @unit')
+    shifts = dat.parse('shifts', index_col = 'shift_id')    
+    shortshifts = dat.parse('shortshifts').query('unit_id == @unit')
+    shortshifts = shortshifts.set_index(['member_id','period_id'])
+    longshifts = dat.parse('longshifts').query('unit_id == @unit')
+    longshifts = longshifts.set_index(['member_id','longshift'])
+
     # Pre-process input data
 
     days = range(1, weeks * 7 + 1)
