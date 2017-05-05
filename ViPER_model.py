@@ -45,7 +45,7 @@ def solve(dat):
     
     rules = dat.parse('rules', index_col = 'rule_id')
     
-    members = dat.parse('members', index_col = 'member_id').query('unit_id == @unit')
+    members = dat.parse('members', index_col = 'member_id').query('unit_id == @unit').drop('unit_id', 1)
     
     shifts = dat.parse('shifts', index_col = 'shift_id')    
     
@@ -57,7 +57,7 @@ def solve(dat):
 
     # Pre-process input data [carryover]
     
-    roster0 = rosters.xs(periods.index.values[periods.index.get_loc(period)-1], level='period_id')
+    roster0 = rosters.xs(periods.index.values[periods.index.get_loc(period)-1], level='period_id').droplevel(1)
     carryover = DataFrame(columns=['member_id','fy_2d_off','fy_we_off','d0_shift','w0_nights','w0_fri_shift','r0_rests','r0_longshift'])
     for m in members.index:
         carryover = carryover.append({
