@@ -69,6 +69,8 @@ def solve(dat):
                     ignore_index=True)
     carryover = carryover.set_index(['member_id'])
 
+    # TO BE DELETED
+    
     print 'members'
     print members
     print 'rosters'
@@ -86,9 +88,6 @@ def solve(dat):
     
     predetermined = shortshifts.copy()
 
-    print 'predetermined'
-    print predetermined
-
     for m in members.index:
         for d in days:
             if isnull(predetermined.ix[m,d]):
@@ -103,6 +102,8 @@ def solve(dat):
                         if not isnull(longshifts.ix[m].ix[1,d]):
                             predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
 
+    # TO BE DELETED
+    
     print 'predetermined'
     print predetermined
     
