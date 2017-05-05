@@ -69,11 +69,27 @@ def solve(dat):
                         'r0_longshift': roster0.ix[m,'longshift']},
                     ignore_index=True)
     carryover = carryover.set_index(['member_id'])
-        
+
+    print 'members'
+    print members
+    print 'rosters'
+    print rosters
+    print 'roster0'
+    print roster0
+    print 'carryover'
+    print carryover
+    print 'shortshifts'
+    print shortshifts
+    print 'longshifts'
+    print longshifts
+
     # Consolidate predetermined long- and shortshifts
     
     predetermined = shortshifts.copy()
-    
+
+    print 'predetermined'
+    print predetermined
+
     for m in members.index:
         for d in days:
             if isnull(predetermined.ix[m,d]):
@@ -87,18 +103,7 @@ def solve(dat):
                     else:
                         if not isnull(longshifts.ix[m].ix[1,d]):
                             predetermined.ix[m,d] = longshifts.ix[m].ix[1,d]
-    print 'members'
-    print members
-    print 'rosters'
-    print rosters
-    print 'roster0'
-    print roster0
-    print 'carryover'
-    print carryover
-    print 'shortshifts'
-    print shortshifts
-    print 'longshifts'
-    print longshifts
+
     print 'predetermined'
     print predetermined
     
