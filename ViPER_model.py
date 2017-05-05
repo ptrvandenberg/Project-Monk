@@ -40,7 +40,7 @@ def solve(dat):
     weeks = periods.ix[period,'weeks']
     days = range(1, weeks * 7 + 1)
 
-    rosters = dat.parse('rosters').query('unit_id == @unit') # to be filtered for current FY only
+    rosters = dat.parse('rosters').query('unit_id == @unit').drop('unit_id', 1) # to be filtered for current FY only
     rosters = rosters.set_index(['member_id','period_id'])
     
     rules = dat.parse('rules', index_col = 'rule_id')
@@ -49,10 +49,9 @@ def solve(dat):
     
     shifts = dat.parse('shifts', index_col = 'shift_id')    
     
-    shortshifts = dat.parse('shortshifts').query('unit_id == @unit').query('period_id == @period')
-    shortshifts = shortshifts.set_index(['member_id','period_id'])
+    shortshifts = dat.parse('shortshifts', index_col = 'member_id').query('unit_id == @unit').query('period_id == @period').drop('period_id', 1).drop('unit_id', 1)
     
-    longshifts = dat.parse('longshifts').query('unit_id == @unit')
+    longshifts = dat.parse('longshifts').query('unit_id == @unit').drop('unit_id', 1)
     longshifts = longshifts.set_index(['member_id','longshift'])
 
     # Pre-process input data [carryover]
