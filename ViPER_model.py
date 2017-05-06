@@ -146,8 +146,8 @@ def solve(dat):
     if rules.ix[20, unit] == 'Yes':
         for m in members.index:
             for d in days:
-                if not isnull(predetermined.ix[m,d]):
-                    model += x[m][d][predetermined.ix[m,d]] == 1
+                if not isnull(predetermined.ix[m,d-1]):
+                    model += x[m][d][predetermined.ix[m,d-1]] == 1
                 else:
                     for s in shifts.index:
                         if shifts.ix[s,'predetermined'] == 1:
