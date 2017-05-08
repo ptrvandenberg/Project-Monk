@@ -73,18 +73,18 @@ def solve(dat):
 
     # TO BE DELETED
     
-#    print 'members'
-#    print members
-#    print 'rosters'
-#    print rosters
-#    print 'roster0'
-#    print roster0
-#    print 'carryover'
-#    print carryover
-#    print 'shortshifts'
-#    print shortshifts
-#    print 'longshifts'
-#    print longshifts
+    print 'members'
+    print members
+    print 'rosters'
+    print rosters
+    print 'roster0'
+    print roster0
+    print 'carryover'
+    print carryover
+    print 'shortshifts'
+    print shortshifts
+    print 'longshifts'
+    print longshifts
 
     # Consolidate predetermined long- and shortshifts
     
@@ -106,8 +106,8 @@ def solve(dat):
 
     # TO BE DELETED
     
-#    print 'predetermined'
-#    print predetermined
+    print 'predetermined'
+    print predetermined
     
     # [0000] OBJECTIVE – Commence model definition and set optimisation direction.
     if rules.ix[0, unit] == 'Yes':
