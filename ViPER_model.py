@@ -268,7 +268,7 @@ def solve(dat):
     # [0110] WEEKEND – All shifts on the weekend, except recovery and rest, are self-nominated only (i.e. pre-determined).
     if rules.ix[110, unit] == 'Yes':
         for m in members.index:
-            for w in range(1,weeks+1):
+            for w in range(1,weeks):
                 for s in shifts.index:
                     if s not in ("OR","XR"):
                         if predetermined.ix[m,1+7*(w-1)-1] <> s:
