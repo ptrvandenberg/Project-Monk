@@ -57,16 +57,18 @@ def solve(dat):
     # Pre-process input data [carryover]
     
     roster0 = rosters.xs(periods.index.values[periods.index.get_loc(period)-1], level='period_id')
-    carryover = DataFrame(columns=['member_id','fy_2d_off','fy_we_off','d0_shift','w0_nights','w0_fri_shift','r0_rests','r0_longshift'])
+    carryover = DataFrame(columns=['member_id','fy_2d_off','fy_we_off','d0_shift','w0_nights','w0_fri_shift','r0_co_rests','r0_longshift'])
+
     for m in members.index:
         carryover = carryover.append({
                         'member_id': m,
                         'd0_shift': roster0.ix[m,'d14'],
                         'w0_nights': (roster0.ix[m,'d8']=='RN')+(roster0.ix[m,'d9']=='RN')+(roster0.ix[m,'d10']=='RN')+(roster0.ix[m,'d11']=='RN')+(roster0.ix[m,'d12']=='RN')+(roster0.ix[m,'d13']=='RN')+(roster0.ix[m,'d14']=='RN'),
                         'w0_fri_shift': roster0.ix[m,'d13'],
-                        'r0_rests': (roster0.ix[m,'d1']=='XR')+(roster0.ix[m,'d2']=='XR')+(roster0.ix[m,'d3']=='XR')+(roster0.ix[m,'d4']=='XR')+(roster0.ix[m,'d5']=='XR')+(roster0.ix[m,'d6']=='XR')+(roster0.ix[m,'d7']=='XR')+(roster0.ix[m,'d8']=='XR')+(roster0.ix[m,'d9']=='XR')+(roster0.ix[m,'d10']=='XR')+(roster0.ix[m,'d11']=='XR')+(roster0.ix[m,'d12']=='XR')+(roster0.ix[m,'d13']=='XR')+(roster0.ix[m,'d14']=='XR'),
+                        'r0_co_rests': max(4-(roster0.ix[m,'d1']=='XR')+(roster0.ix[m,'d2']=='XR')+(roster0.ix[m,'d3']=='XR')+(roster0.ix[m,'d4']=='XR')+(roster0.ix[m,'d5']=='XR')+(roster0.ix[m,'d6']=='XR')+(roster0.ix[m,'d7']=='XR')+(roster0.ix[m,'d8']=='XR')+(roster0.ix[m,'d9']=='XR')+(roster0.ix[m,'d10']=='XR')+(roster0.ix[m,'d11']=='XR')+(roster0.ix[m,'d12']=='XR')+(roster0.ix[m,'d13']=='XR')+(roster0.ix[m,'d14']=='XR'),0),
                         'r0_longshift': roster0.ix[m,'longshift']},
                     ignore_index=True)
+    
     carryover = carryover.set_index(['member_id'])
 
     # TO BE DELETED
@@ -115,7 +117,7 @@ def solve(dat):
     x = LpVariable.dicts("x_m%s_d%s_s%s", (members.index, days, shifts.index), 0, 1, LpBinary)
     
     # Create and define the additional variables
-    r2_rests = LpVariable.dicts("r2_rests_%s", members.index, 0, 2, LpInteger)
+    r2_co_rests = LpVariable.dicts("r2_rests_%s", members.index, 0, 2, LpInteger)
     RN_bin1 = LpVariable.dicts("NG_bin1_%s", members.index, 0, 1, LpBinary)
     RN_bin4 = LpVariable.dicts("NG_bin4_%s", members.index, 0, 1, LpBinary)
     RN_bin5 = LpVariable.dicts("NG_bin5_%s", members.index, 0, 1, LpBinary)
@@ -158,16 +160,12 @@ def solve(dat):
     # [0030] FTE – Each member needs to be assigned to 5*FTE*weeks -/+ carryover rests shifts, excluding part-time and rest shift.
     if rules.ix[30, unit] == 'Yes':
         for m in members.index:
-            model += lpSum([x[m][d][s] for d in days for s in shifts.index if s <> "XP" and s <> "XR"]) == weeks * 5 * members.ix[m,'fte'] - carryover.ix[m,'r0_rests'] + r2_rests[m]
+            model += lpSum([x[m][d][s] for d in days for s in shifts.index if s <> "XP" and s <> "XR"]) == weeks * 5 * members.ix[m,'fte'] - carryover.ix[m,'r0_co_rests'] + r2_co_rests[m]
     
     # [0040] REST – Each member needs to be assigned 2*weeks +/- carryover rest shifts.
     if rules.ix[40, unit] == 'Yes':
         for m in members.index:
-            if carryover.ix[m,'r0_rests'] >= 4:
-                co_rest = 0
-            else:
-                co_rest = 4 - carryover.ix[m,'r0_rests']
-            model += lpSum([x[m][d]["XR"] for d in days]) == weeks * 2 + co_rest - r2_rests[m]
+            model += lpSum([x[m][d]["XR"] for d in days]) == weeks * 2 + carryover.ix[m,'r0_co_rests'] - r2_rests[m]
     
     # [0050] PART-TIME – Each member needs to be assigned to 5*(1-FTE)*weeks part-time shifts.
     if rules.ix[50, unit] == 'Yes':
@@ -186,7 +184,7 @@ def solve(dat):
     # [0070] REST CARRYOVER – Each member can carryover up to 2 rests if he/she is on 7 consecutive night shifts in the current roster; 0 if not.
     if rules.ix[70, unit] == 'Yes':
         for m in members.index:
-            model += r2_rests[m] <= 2 * (RN_bin1[m] + RN_bin4[m] + RN_bin5[m] + RN_bin8[m])
+            model += r2_co_rests[m] <= 2 * (RN_bin1[m] + RN_bin4[m] + RN_bin5[m] + RN_bin8[m])
             model += RN_bin1[m] <= lpSum([x[m][d]["RN"] for d in range(1,8)]) / 7
             model += RN_bin1[m] > lpSum([x[m][d]["RN"] for d in range(1,8)]) / 7 - 1
             model += RN_bin4[m] <= lpSum([x[m][d]["RN"] for d in range(4,11)]) / 7
