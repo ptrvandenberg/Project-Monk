@@ -79,8 +79,8 @@ def solve(dat):
 #    print rosters
 #    print 'roster0'
 #    print roster0
-#    print 'carryover'
-#    print carryover
+    print 'carryover'
+    print carryover
 #    print 'shortshifts'
 #    print shortshifts
 #    print 'longshifts'
