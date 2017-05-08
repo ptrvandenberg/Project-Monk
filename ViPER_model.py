@@ -163,7 +163,11 @@ def solve(dat):
     # [0040] REST – Each member needs to be assigned 2*weeks +/- carryover rest shifts.
     if rules.ix[40, unit] == 'Yes':
         for m in members.index:
-            model += lpSum([x[m][d]["XR"] for d in days]) == weeks * 2 + carryover.ix[m,'r0_rests'] - r2_rests[m]
+            if carryover.ix[m,'r0_rests'] >= 4:
+                co_rest == 0
+            else:
+                co_rest == 4 - carryover.ix[m,'r0_rests']
+            model += lpSum([x[m][d]["XR"] for d in days]) == weeks * 2 + co_rest - r2_rests[m]
     
     # [0050] PART-TIME – Each member needs to be assigned to 5*(1-FTE)*weeks part-time shifts.
     if rules.ix[50, unit] == 'Yes':
