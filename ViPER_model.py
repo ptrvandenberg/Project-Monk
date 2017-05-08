@@ -253,7 +253,7 @@ def solve(dat):
             if carryover.ix[m,'w0_nights'] <> 3 or carryover.ix[m,'d0_shift'] <> "RN": 
                 model += x[m][1]["SP2"] == 0
 
-            for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+            for w in range(1,weeks+1):
                 if w <> 1:
                     model += x[m][1+7*(w-1)]["SP2"] <= lpSum([x[m][d]["RN"] for d in range(-2+7*(w-1),1+7*(w-1))]) / 3
                 model += x[m][2+7*(w-1)]["SP2"] == 0
@@ -266,7 +266,7 @@ def solve(dat):
     # [0110] WEEKEND – All shifts on the weekend, except recovery and rest, are self-nominated only (i.e. pre-determined).
     if rules.ix[110, unit] == 'Yes':
         for m in members.index:
-            for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+            for w in range(1,weeks+1):
                 for s in shifts.index:
                     if s not in ("OR","XR"):
                         if predetermined.ix[m,1+7*(w-1)-1] <> s:
@@ -276,7 +276,7 @@ def solve(dat):
     
     # [0120] WEEKEND – Weekend morning 700 1 member, 900 1 member; weekend afternoon 1500 2 members; none on all other response and station day shifts.
     if rules.ix[120, unit] == 'Yes':
-        for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+        for w in range(1,weeks+1):
             for d in (1,7):
                 model += lpSum([x[m][d+7*(w-1)]["RA1"] for m in members.index]) == 1
                 model += lpSum([x[m][d+7*(w-1)]["RA2"] for m in members.index]) == 0
@@ -290,14 +290,14 @@ def solve(dat):
     
     # [0130] WEEKDAY – On weekdays, the morning response 700 needs to have 1 member only.
     if rules.ix[130, unit] == 'Yes':
-        for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+        for w in range(1,weeks+1):
             for d in range(2,6+1):
                 model += lpSum([x[m][d]["RA1"] for m in members.index]) == 1
 
     # [0140] WEEKDAY – On weekdays, the morning response 900 and station 900 shifts only allowed if 1500 day before.
     if rules.ix[140, unit] == 'Yes':
         for m in members.index:
-            for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+            for w in range(1,weeks+1):
                 for d in range(2,6+1):
                     model += x[m][d+7*(w-1)]["RA3"] <= x[m][d+7*(w-1)-1]["RP2"] + x[m][d+7*(w-1)-1]["SP1"]
                     model += x[m][d+7*(w-1)]["SA2"] <= x[m][d+7*(w-1)-1]["RP2"] + x[m][d+7*(w-1)-1]["SP1"]
@@ -305,20 +305,20 @@ def solve(dat):
     # [0150] WEEKDAY – On weekdays, the afternoon response 1300 shift only allowed if 700 next day.
     if rules.ix[150, unit] == 'Yes':
         for m in members.index:
-            for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+            for w in range(1,weeks+1):
                 for d in range(2,6+1):
                     model += x[m][d+7*(w-1)]["RP1"] <= x[m][d+7*(w-1)+1]["RS"] + x[m][d+7*(w-1)+1]["RA1"]
     
     # [0170] FRIDAY AVO – Member are not allowed to be rostered on Friday afternoon shift and Saturday morning or afternoon shift.
     if rules.ix[170, unit] == 'Yes':
         for m in members.index:
-            for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+            for w in range(1,weeks+1):
                 model += x[m][6+7*(w-1)]["RP1"] + x[m][6+7*(w-1)]["RP2"] + x[m][6+7*(w-1)]["SP1"] + x[m][6+7*(w-1)]["SP2"] + x[m][7+7*(w-1)]["RA1"] + x[m][7+7*(w-1)]["RA2"] + x[m][7+7*(w-1)]["RA3"] + x[m][7+7*(w-1)]["SA1"] + x[m][7+7*(w-1)]["SA2"] + x[m][7+7*(w-1)]["RP1"] + x[m][7+7*(w-1)]["RP2"] + x[m][7+7*(w-1)]["SP1"] + x[m][7+7*(w-1)]["SP2"] <= 1
     
     # [0180] FRIDAY AVO – Members are not allowed to be rostered on Friday afternoon shifts two consecutive weeks.
     if rules.ix[180, unit] == 'Yes':
         for m in members.index:
-            for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+            for w in range(1,weeks+1):
                 if w == 1:
                     if carryover.ix[m,'w0_fri_shift'] in ("RP1","RP2","SP1","SP2"):
                         model += x[m][6]["RP1"] + x[m][6]["RP2"] + x[m][6]["SP1"] + x[m][6]["SP2"] == 0
@@ -329,13 +329,13 @@ def solve(dat):
     if rules.ix[190, unit] == 'Yes':
         for m in members.index:
             if members.ix[m,'rank'] == "S":
-                for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+                for w in range(1,weeks+1):
                     for d in range(2,6+1):
                         model += x[m][d+7*(w-1)]["RA1"] == 0
 
     # [0200] CREW – On weekdays, morning and afternoon response needs to have at least 3 members, but 4 is preferred.
     if rules.ix[200, unit] == 'Yes':
-        for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+        for w in range(1,weeks+1):
             for d in range(2,6+1):
                 model += lpSum([x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] for m in members.index]) >= 3
                 model += lpSum([x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] for m in members.index]) <= 4
@@ -344,7 +344,7 @@ def solve(dat):
     
     # [0210] CREW – On weekdays, both morning and afternoon response shifts each have to be from the same crew.
     if rules.ix[210, unit] == 'Yes':
-        for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+        for w in range(1,weeks+1):
             for d in range(2,6+1):
                 model += crew_am_bin1[d+7*(w-1)] + crew_am_bin2[d+7*(w-1)] + crew_am_bin3[d+7*(w-1)] == 1
                 model += crew_pm_bin1[d+7*(w-1)] + crew_pm_bin2[d+7*(w-1)] + crew_pm_bin3[d+7*(w-1)] == 1
@@ -361,7 +361,7 @@ def solve(dat):
     
     # [0215] CREW – On weekdays, if a member’s crew is on morning or afternoon (excluding 1700) response then the member can’t be on an afternoon or morning shift respectively.
     if rules.ix[215, unit] == 'Yes':
-        for w in range(1,settings.ix['nbr_roster_weeks','value']+1):
+        for w in range(1,weeks+1):
             for d in range(2,6+1):
                 for m in members.index:
                     if members.ix[m,'crew'] == 1:
