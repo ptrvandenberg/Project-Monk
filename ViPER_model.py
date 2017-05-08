@@ -269,11 +269,11 @@ def solve(dat):
     if rules.ix[110, unit] == 'Yes':
         for m in members.index:
 #            for w in range(1,weeks+1):
-            for w in range(2,weeks+1):
+            for w in range(1,weeks):
                 for s in shifts.index:
                     if s not in ("OR","XR"):
-#                        if predetermined.ix[m,1+7*(w-1)-1] <> s:
-#                            model += x[m][1+7*(w-1)][s] == 0
+                        if predetermined.ix[m,1+7*(w-1)-1] <> s:
+                            model += x[m][1+7*(w-1)][s] == 0
                         if predetermined.ix[m,7+7*(w-1)-1] <> s:
                             model += x[m][7+7*(w-1)][s] == 0
     
