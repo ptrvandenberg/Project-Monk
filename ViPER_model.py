@@ -411,7 +411,7 @@ def solve(dat):
         roster = {}
     elif LpStatus[model.status] == 'Optimal':
         print("< < < Optimisation completed, codifying roster > > >")
-        roster = DataFrame(columns=['Crew','Member_ID', 'Member','Rank'])
+        roster = DataFrame(columns=['Únit', 'Crew', 'Member_ID', 'Member', 'Rank'])
         for w in range(1,weeks+1):
             roster['Sun '+str(startdate + timedelta(days=0+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=0+7*(w-1)))[5:-12]] = ''
             roster['Mon '+str(startdate + timedelta(days=1+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=1+7*(w-1)))[5:-12]] = ''
@@ -426,7 +426,11 @@ def solve(dat):
                 m = v.name[v.name.find("_m")+2:v.name.find("_d")]
                 d = v.name[v.name.find("_d")+2:v.name.find("_s")]
                 s = v.name[v.name.find("_s")+2:]
-                roster.ix[m,int(d)+2] = s
+                roster.ix[m,'Unit'] = members.ix[m,'unit_id']
+                roster.ix[m,'Crew'] = members.ix[m,'crew']
+                roster.ix[m,'Member'] = members.ix[m,'lastname'] + ' ' + members.ix[m,'firstname']
+                roster.ix[m,'Rank'] = members.ix[m,'rank']
+                roster.ix[m,int(d)+3] = s
         print("< < < Roster codifying completed, finished > > >")
 
     roster.to_excel('roster.xlsx', 'Roster')
