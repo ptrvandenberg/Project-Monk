@@ -7,6 +7,7 @@
 # Import dependencies
 from pandas import DataFrame, ExcelFile, isnull
 from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpContinuous, LpInteger, LpBinary, LpStatus, value
+from datetime import timedelta
 
 # Validate input data (including keys, data types)
 def validate_input(dat):
@@ -39,6 +40,7 @@ def solve(dat):
     periods = dat.parse('periods', index_col = 'period_id')
     weeks = periods.ix[period,'weeks']
     days = range(1, weeks * 7 + 1)
+    startdate = periods.ix[period,'start_date']
 
     rosters = dat.parse('rosters').query('unit_id == @unit').drop('unit_id', 1) # to be filtered for current FY only
     rosters = rosters.set_index(['member_id','period_id'])
@@ -403,33 +405,29 @@ def solve(dat):
     
     if LpStatus[model.status] == 'Infeasible':
         print("< < < Optimisation completed, infeasible > > >")
-#        roster = {}
-        roster = predetermined.copy()
-        for v in model.variables():
-            if v.name[0:2] == "x_" and v.varValue == 1:
-                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
-                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
-                s = v.name[v.name.find("_s")+2:]
-                roster.ix[m,int(d)-1] = s
+        roster = {}
     elif LpStatus[model.status] == 'Undefined':
         print("< < < Optimisation completed, undefined > > >")
-#        roster = {}
-        roster = predetermined.copy()
-        for v in model.variables():
-            if v.name[0:2] == "x_" and v.varValue == 1:
-                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
-                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
-                s = v.name[v.name.find("_s")+2:]
-                roster.ix[m,int(d)-1] = s
+        roster = {}
     elif LpStatus[model.status] == 'Optimal':
         print("< < < Optimisation completed, codifying roster > > >")
-        roster = predetermined.copy()
-        for v in model.variables():
-            if v.name[0:2] == "x_" and v.varValue == 1:
-                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
-                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
-                s = v.name[v.name.find("_s")+2:]
-                roster.ix[m,int(d)-1] = s
+        roster = DataFrame(columns=['Crew','Member_ID', 'Member','Rank'])
+        for w in range(1,weeks+1):
+            roster['Sun '+str(startdate + timedelta(days=0+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=0+7*(w-1)))[5:-12]] = ''
+            roster['Mon '+str(startdate + timedelta(days=1+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=1+7*(w-1)))[5:-12]] = ''
+            roster['Tue '+str(startdate + timedelta(days=2+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=2+7*(w-1)))[5:-12]] = ''
+            roster['Wed '+str(startdate + timedelta(days=3+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=3+7*(w-1)))[5:-12]] = ''
+            roster['Thu '+str(startdate + timedelta(days=4+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=4+7*(w-1)))[5:-12]] = ''
+            roster['Fri '+str(startdate + timedelta(days=5+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=5+7*(w-1)))[5:-12]] = ''
+            roster['Sat '+str(startdate + timedelta(days=6+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=6+7*(w-1)))[5:-12]] = ''
+
+#        roster = predetermined.copy()
+#        for v in model.variables():
+#            if v.name[0:2] == "x_" and v.varValue == 1:
+#                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
+#                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
+#                s = v.name[v.name.find("_s")+2:]
+#                roster.ix[m,int(d)-1] = s
         print("< < < Roster codifying completed, finished > > >")
 
     return roster
