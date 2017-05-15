@@ -426,7 +426,7 @@ def solve(dat):
                 m = v.name[v.name.find("_m")+2:v.name.find("_d")]
                 d = v.name[v.name.find("_d")+2:v.name.find("_s")]
                 s = v.name[v.name.find("_s")+2:]
-                roster.ix[m,'Unit'] = members.ix[m,'unit_id']
+                roster.ix[m,'Unit'] = unit
                 roster.ix[m,'Crew'] = members.ix[m,'crew']
                 roster.ix[m,'Member'] = members.ix[m,'lastname'] + ' ' + members.ix[m,'firstname']
                 roster.ix[m,'Rank'] = members.ix[m,'rank']
