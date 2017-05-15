@@ -420,14 +420,15 @@ def solve(dat):
             roster['Thu '+str(startdate + timedelta(days=4+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=4+7*(w-1)))[5:-12]] = ''
             roster['Fri '+str(startdate + timedelta(days=5+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=5+7*(w-1)))[5:-12]] = ''
             roster['Sat '+str(startdate + timedelta(days=6+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=6+7*(w-1)))[5:-12]] = ''
-
-#        roster = predetermined.copy()
-#        for v in model.variables():
-#            if v.name[0:2] == "x_" and v.varValue == 1:
-#                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
-#                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
-#                s = v.name[v.name.find("_s")+2:]
-#                roster.ix[m,int(d)-1] = s
+        roster = roster.set_index(['Member_ID'])
+        for v in model.variables():
+            if v.name[0:2] == "x_" and v.varValue == 1:
+                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
+                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
+                s = v.name[v.name.find("_s")+2:]
+                roster.ix[m,int(d)+2] = s
         print("< < < Roster codifying completed, finished > > >")
+
+    roster.to_excel('roster.xlsx', 'Roster')
 
     return roster
