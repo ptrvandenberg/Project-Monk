@@ -433,6 +433,4 @@ def solve(dat):
                 roster.ix[m,int(d)+3] = s
         print("< < < Roster codifying completed, finished > > >")
 
-    roster.to_excel('roster.xlsx', 'Roster')
-
     return roster
