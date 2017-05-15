@@ -411,7 +411,7 @@ def solve(dat):
         roster = {}
     elif LpStatus[model.status] == 'Optimal':
         print("< < < Optimisation completed, codifying roster > > >")
-        roster = DataFrame(columns=['Únit', 'Crew', 'Member_ID', 'Member', 'Rank'])
+        roster = DataFrame(columns=['Unit', 'Crew', 'Member_ID', 'Member', 'Rank'])
         for w in range(1,weeks+1):
             roster['Sun '+str(startdate + timedelta(days=0+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=0+7*(w-1)))[5:-12]] = ''
             roster['Mon '+str(startdate + timedelta(days=1+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=1+7*(w-1)))[5:-12]] = ''
