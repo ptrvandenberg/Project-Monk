@@ -42,7 +42,7 @@ def solve(dat):
     days = range(1, weeks * 7 + 1)
     startdate = periods.ix[period,'start_date']
 
-    rosters = dat.parse('rosters').query('unit_id == @unit').drop('unit_id', 1) # to be filtered for required rosters only
+    rosters = dat.parse('rosters').query('unit_id == @unit').drop('unit_id', 1) # to be filtered for FY only for carryover
     rosters = rosters.set_index(['member_id','period_id','week'])
     
     rules = dat.parse('rules', index_col = 'rule_id')
@@ -76,7 +76,7 @@ def solve(dat):
     print 'roster0'
     print roster0
 
-    carryover = DataFrame(columns=['member_id','fy_2d_off','fy_we_off','d0_shift','w0_nights','w0_fri_shift','r0_co_rests','r0_longshift'])
+    carryover = DataFrame(columns=['member_id','d0_shift','w0_nights','w0_fri_shift','w0_longshift','r0_co_rests','fy_2d_off','fy_we_off'])
 
     for m in members.index:
         carryover = carryover.append({
@@ -93,8 +93,7 @@ def solve(dat):
     for m in members.index:
         for w in range(1,weeks0+1):
             carryover.ix[m,'r0_co_rests'] += (roster0.ix[m].ix[w,'d1']=='XR')+(roster0.ix[m].ix[w,'d2']=='XR')+(roster0.ix[m].ix[w,'d3']=='XR')+(roster0.ix[m].ix[w,'d4']=='XR')+(roster0.ix[m].ix[w,'d5']=='XR')+(roster0.ix[m].ix[w,'d6']=='XR')+(roster0.ix[m].ix[w,'d7']=='XR')
-
-#    max(2 * weeks0 - (),0)
+        carryover.ix[m,'r0_co_rests'] = max(2 * weeks0 - (carryover.ix[m,'r0_co_rests']),0)
             
     # TO BE DELETED
     print 'carryover'
