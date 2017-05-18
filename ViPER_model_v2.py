@@ -58,7 +58,6 @@ def solve(dat):
     longshifts = longshifts.set_index(['member_id','longshift'])
 
     # TO BE DELETED
-    
     print 'members'
     print members
     print 'rosters'
@@ -71,6 +70,11 @@ def solve(dat):
     # Pre-process input data [carryover]
     
     roster0 = rosters.xs(periods.index.values[periods.index.get_loc(period)-1], level='period_id')
+
+    # TO BE DELETED
+    print 'roster0'
+    print roster0
+
     carryover = DataFrame(columns=['member_id','fy_2d_off','fy_we_off','d0_shift','w0_nights','w0_fri_shift','r0_co_rests','r0_longshift'])
 
     for m in members.index:
@@ -86,9 +90,6 @@ def solve(dat):
     carryover = carryover.set_index(['member_id'])
 
     # TO BE DELETED
-    
-    print 'roster0'
-    print roster0
     print 'carryover'
     print carryover
 
