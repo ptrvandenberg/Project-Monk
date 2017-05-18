@@ -81,10 +81,10 @@ def solve(dat):
     for m in members.index:
         carryover = carryover.append({
                         'member_id': m,
-#                        'd0_shift': roster0.ix[m,'d14'],
-#                        'w0_nights': (roster0.ix[m,'d8']=='RN')+(roster0.ix[m,'d9']=='RN')+(roster0.ix[m,'d10']=='RN')+(roster0.ix[m,'d11']=='RN')+(roster0.ix[m,'d12']=='RN')+(roster0.ix[m,'d13']=='RN')+(roster0.ix[m,'d14']=='RN'),
-#                        'w0_fri_shift': roster0.ix[m,'d13'],
-#                        'r0_co_rests': max(4-((roster0.ix[m,'d1']=='XR')+(roster0.ix[m,'d2']=='XR')+(roster0.ix[m,'d3']=='XR')+(roster0.ix[m,'d4']=='XR')+(roster0.ix[m,'d5']=='XR')+(roster0.ix[m,'d6']=='XR')+(roster0.ix[m,'d7']=='XR')+(roster0.ix[m,'d8']=='XR')+(roster0.ix[m,'d9']=='XR')+(roster0.ix[m,'d10']=='XR')+(roster0.ix[m,'d11']=='XR')+(roster0.ix[m,'d12']=='XR')+(roster0.ix[m,'d13']=='XR')+(roster0.ix[m,'d14']=='XR')),0),
+                        'd0_shift': roster0.ix[m].ix[weeks0,'d7'],
+                        'w0_nights': (roster0.ix[m].ix[weeks0,'d1']=='RN')+(roster0.ix[m].ix[weeks0,'d2']=='RN')+(roster0.ix[m].ix[weeks0,'d3']=='RN')+(roster0.ix[m].ix[weeks0,'d4']=='RN')+(roster0.ix[m].ix[weeks0,'d5']=='RN')+(roster0.ix[m].ix[weeks0,'d6']=='RN')+(roster0.ix[m].ix[weeks0,'d7']=='RN'),
+                        'w0_fri_shift': roster0.ix[m].ix[weeks0,'d6'],
+                        'r0_co_rests': max(2 * weeks0 - ((roster0.ix[m].ix[weeks0,'d1']=='XR')+(roster0.ix[m].ix[weeks0,'d2']=='XR')+(roster0.ix[m].ix[weeks0,'d3']=='XR')+(roster0.ix[m].ix[weeks0,'d4']=='XR')+(roster0.ix[m].ix[weeks0,'d5']=='XR')+(roster0.ix[m].ix[weeks0,'d6']=='XR')+(roster0.ix[m].ix[weeks0,'d7']=='XR')),0),
                         'r0_longshift': roster0.ix[m].ix[weeks0,'longshift']},
                     ignore_index=True)
     
