@@ -13,7 +13,7 @@ from datetime import timedelta
 def validate_input(dat):
     rtn = {}
     
-    # Input test 1: Weeks = 2 (model only designed for this)
+    # Input test 1: Weeks = 2 (model only designed for this???)
 
     if dat.parse('periods', index_col = 'period_id').loc[dat.parse('settings', index_col = 'parameter').loc['period_id', 'value'], 'weeks'] <> 2:
         rtn['Test 1 - Weeks'] = 'value <> 2'
@@ -42,8 +42,8 @@ def solve(dat):
     days = range(1, weeks * 7 + 1)
     startdate = periods.ix[period,'start_date']
 
-    rosters = dat.parse('rosters').query('unit_id == @unit').drop('unit_id', 1) # to be filtered for current FY only
-    rosters = rosters.set_index(['member_id','period_id'])
+    rosters = dat.parse('rosters').query('unit_id == @unit').drop('unit_id', 1) # to be filtered for required rosters only
+    rosters = rosters.set_index(['member_id','period_id','week'])
     
     rules = dat.parse('rules', index_col = 'rule_id')
     
@@ -51,10 +51,22 @@ def solve(dat):
     
     shifts = dat.parse('shifts', index_col = 'shift_id')    
     
-    shortshifts = dat.parse('shortshifts', index_col = 'member_id').query('unit_id == @unit').query('period_id == @period').drop('period_id', 1).drop('unit_id', 1)
+    shortshifts = dat.parse('shortshifts').query('unit_id == @unit').query('period_id == @period').drop('period_id', 1).drop('unit_id', 1)
+    shortshifts = shortshifts.set_index(['member_id','week'])
     
     longshifts = dat.parse('longshifts').query('unit_id == @unit').drop('unit_id', 1)
     longshifts = longshifts.set_index(['member_id','longshift'])
+
+    # TO BE DELETED
+    
+    print 'members'
+    print members
+    print 'rosters'
+    print rosters
+    print 'shortshifts'
+    print shortshifts
+    print 'longshifts'
+    print longshifts
 
     # Pre-process input data [carryover]
     
@@ -64,10 +76,10 @@ def solve(dat):
     for m in members.index:
         carryover = carryover.append({
                         'member_id': m,
-                        'd0_shift': roster0.ix[m,'d14'],
-                        'w0_nights': (roster0.ix[m,'d8']=='RN')+(roster0.ix[m,'d9']=='RN')+(roster0.ix[m,'d10']=='RN')+(roster0.ix[m,'d11']=='RN')+(roster0.ix[m,'d12']=='RN')+(roster0.ix[m,'d13']=='RN')+(roster0.ix[m,'d14']=='RN'),
-                        'w0_fri_shift': roster0.ix[m,'d13'],
-                        'r0_co_rests': max(4-((roster0.ix[m,'d1']=='XR')+(roster0.ix[m,'d2']=='XR')+(roster0.ix[m,'d3']=='XR')+(roster0.ix[m,'d4']=='XR')+(roster0.ix[m,'d5']=='XR')+(roster0.ix[m,'d6']=='XR')+(roster0.ix[m,'d7']=='XR')+(roster0.ix[m,'d8']=='XR')+(roster0.ix[m,'d9']=='XR')+(roster0.ix[m,'d10']=='XR')+(roster0.ix[m,'d11']=='XR')+(roster0.ix[m,'d12']=='XR')+(roster0.ix[m,'d13']=='XR')+(roster0.ix[m,'d14']=='XR')),0),
+#                        'd0_shift': roster0.ix[m,'d14'],
+#                        'w0_nights': (roster0.ix[m,'d8']=='RN')+(roster0.ix[m,'d9']=='RN')+(roster0.ix[m,'d10']=='RN')+(roster0.ix[m,'d11']=='RN')+(roster0.ix[m,'d12']=='RN')+(roster0.ix[m,'d13']=='RN')+(roster0.ix[m,'d14']=='RN'),
+#                        'w0_fri_shift': roster0.ix[m,'d13'],
+#                        'r0_co_rests': max(4-((roster0.ix[m,'d1']=='XR')+(roster0.ix[m,'d2']=='XR')+(roster0.ix[m,'d3']=='XR')+(roster0.ix[m,'d4']=='XR')+(roster0.ix[m,'d5']=='XR')+(roster0.ix[m,'d6']=='XR')+(roster0.ix[m,'d7']=='XR')+(roster0.ix[m,'d8']=='XR')+(roster0.ix[m,'d9']=='XR')+(roster0.ix[m,'d10']=='XR')+(roster0.ix[m,'d11']=='XR')+(roster0.ix[m,'d12']=='XR')+(roster0.ix[m,'d13']=='XR')+(roster0.ix[m,'d14']=='XR')),0),
                         'r0_longshift': roster0.ix[m,'longshift']},
                     ignore_index=True)
     
@@ -75,18 +87,10 @@ def solve(dat):
 
     # TO BE DELETED
     
-#    print 'members'
-#    print members
-#    print 'rosters'
-#    print rosters
-#    print 'roster0'
-#    print roster0
-#    print 'carryover'
-#    print carryover
-#    print 'shortshifts'
-#    print shortshifts
-#    print 'longshifts'
-#    print longshifts
+    print 'roster0'
+    print roster0
+    print 'carryover'
+    print carryover
 
     # Consolidate predetermined long- and shortshifts
     
@@ -108,8 +112,8 @@ def solve(dat):
 
     # TO BE DELETED
     
-#    print 'predetermined'
-#    print predetermined
+    print 'predetermined'
+    print predetermined
     
     # [0000] OBJECTIVE – Commence model definition and set optimisation direction.
     if rules.ix[0, unit] == 'Yes':
