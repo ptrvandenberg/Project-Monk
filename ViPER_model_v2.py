@@ -84,12 +84,18 @@ def solve(dat):
                         'd0_shift': roster0.ix[m].ix[weeks0,'d7'],
                         'w0_nights': (roster0.ix[m].ix[weeks0,'d1']=='RN')+(roster0.ix[m].ix[weeks0,'d2']=='RN')+(roster0.ix[m].ix[weeks0,'d3']=='RN')+(roster0.ix[m].ix[weeks0,'d4']=='RN')+(roster0.ix[m].ix[weeks0,'d5']=='RN')+(roster0.ix[m].ix[weeks0,'d6']=='RN')+(roster0.ix[m].ix[weeks0,'d7']=='RN'),
                         'w0_fri_shift': roster0.ix[m].ix[weeks0,'d6'],
-                        'r0_co_rests': max(2 * weeks0 - ((roster0.ix[m].ix[weeks0,'d1']=='XR')+(roster0.ix[m].ix[weeks0,'d2']=='XR')+(roster0.ix[m].ix[weeks0,'d3']=='XR')+(roster0.ix[m].ix[weeks0,'d4']=='XR')+(roster0.ix[m].ix[weeks0,'d5']=='XR')+(roster0.ix[m].ix[weeks0,'d6']=='XR')+(roster0.ix[m].ix[weeks0,'d7']=='XR')),0),
-                        'r0_longshift': roster0.ix[m].ix[weeks0,'longshift']},
+                        'w0_longshift': roster0.ix[m].ix[weeks0,'longshift'],
+                        'r0_co_rests': 0},
                     ignore_index=True)
     
     carryover = carryover.set_index(['member_id'])
 
+    for m in members.index:
+        for w in range(1,weeks0+1):
+            carryover.ix[m,'r0_co_rests'] += (roster0.ix[m].ix[w,'d1']=='XR')+(roster0.ix[m].ix[w,'d2']=='XR')+(roster0.ix[m].ix[w,'d3']=='XR')+(roster0.ix[m].ix[w,'d4']=='XR')+(roster0.ix[m].ix[w,'d5']=='XR')+(roster0.ix[m].ix[w,'d6']=='XR')+(roster0.ix[m].ix[w,'d7']=='XR')
+
+#    max(2 * weeks0 - (),0)
+            
     # TO BE DELETED
     print 'carryover'
     print carryover
@@ -105,9 +111,9 @@ def solve(dat):
                     if not isnull(longshifts.ix[m].ix[1,d-1]):
                         predetermined.ix[m,d-1] = longshifts.ix[m].ix[1,d-1]
                 elif members.ix[m,'longshifts'] > 1:
-                    if carryover.ix[m,'r0_longshift'] < members.ix[m,'longshifts']:
-                        if not isnull(longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1,d-1]):
-                            predetermined.ix[m,d-1] = longshifts.ix[m].ix[carryover.ix[m,'r0_longshift']+1,d-1]
+                    if carryover.ix[m,'w0_longshift'] < members.ix[m,'longshifts']:
+                        if not isnull(longshifts.ix[m].ix[carryover.ix[m,'w0_longshift']+1,d-1]):
+                            predetermined.ix[m,d-1] = longshifts.ix[m].ix[carryover.ix[m,'w0_longshift']+1,d-1]
                     else:
                         if not isnull(longshifts.ix[m].ix[1,d-1]):
                             predetermined.ix[m,d-1] = longshifts.ix[m].ix[1,d-1]
