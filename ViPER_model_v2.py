@@ -104,18 +104,16 @@ def solve(dat):
     predetermined = shortshifts.copy()
 
     for m in members.index:
-        for d in days:
-            if isnull(predetermined.ix[m,d-1]):
-                if members.ix[m,'longshifts'] == 1:
-                    if not isnull(longshifts.ix[m].ix[1,d-1]):
-                        predetermined.ix[m,d-1] = longshifts.ix[m].ix[1,d-1]
-                elif members.ix[m,'longshifts'] > 1:
-                    if carryover.ix[m,'w0_longshift'] < members.ix[m,'longshifts']:
-                        if not isnull(longshifts.ix[m].ix[carryover.ix[m,'w0_longshift']+1,d-1]):
-                            predetermined.ix[m,d-1] = longshifts.ix[m].ix[carryover.ix[m,'w0_longshift']+1,d-1]
-                    else:
-                        if not isnull(longshifts.ix[m].ix[1,d-1]):
-                            predetermined.ix[m,d-1] = longshifts.ix[m].ix[1,d-1]
+        for w in range(1,weeks+1):
+            for d in range(1,7+1):
+                if isnull(predetermined.ix[m].ix[w,d-1]):
+                    if members.ix[m,'longshifts'] >= 1:
+                        if carryover.ix[m,'w0_longshift']+w <= members.ix[m,'longshifts']:
+                            if not isnull(longshifts.ix[m].ix[carryover.ix[m,'w0_longshift']+1,d-1]):
+                                predetermined.ix[m].ix[w,d-1] = longshifts.ix[m].ix[carryover.ix[m,'w0_longshift']+1,d-1]
+                        else:
+                            if not isnull(longshifts.ix[m].ix[1,d-1]):
+                                predetermined.ix[m].ix[w,d-1] = longshifts.ix[m].ix[1,d-1]
 
     # TO BE DELETED
     
