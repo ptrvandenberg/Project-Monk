@@ -113,14 +113,14 @@ def solve(dat):
                     ls += 1
                 else:
                     ls = 1
-                print '2. ', m, ls
+                print '3. ', m, ls
                 for d in range(1,7+1):
-                    print '3. ', m, predetermined.ix[m].ix[w,d-1]
+                    print '4. ', m, predetermined.ix[m].ix[w,d-1]
                     if isnull(predetermined.ix[m].ix[w,d-1]):
-                        print '4. ', m, longshifts.ix[m].ix[ls,d-1]
+                        print '5. ', m, longshifts.ix[m].ix[ls,d-1]
                         if not isnull(longshifts.ix[m].ix[ls,d-1]):
                             predetermined.ix[m].ix[w,d-1] = longshifts.ix[m].ix[ls,d-1]
-                            print '5. ', m, predetermined.ix[m].ix[w,d-1]
+                            print '6. ', m, predetermined.ix[m].ix[w,d-1]
 
     # TO BE DELETED
     
