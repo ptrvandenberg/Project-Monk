@@ -130,7 +130,8 @@ def solve(dat):
                 for d in range(1,7+1):
                     if isnull(predetermined.ix[m].ix[w,d-1]):
                         if not isnull(longshifts.ix[m].ix[ls,d-1]):
-                            predetermined.ix[m].ix[w,d-1] = longshifts.ix[m].ix[ls,d-1]
+#                            predetermined.ix[m].ix[w,d-1] = longshifts.ix[m].ix[ls,d-1]
+                            predetermined[d-1].loc[m,w] = longshifts.ix[m].ix[ls,d-1]
 
     # TO BE DELETED
     
