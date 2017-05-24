@@ -102,7 +102,7 @@ def solve(dat):
     # Consolidate predetermined long- and shortshifts
     
 #    predetermined = shortshifts.copy()
-    predetermined = shortshifts.loc([:,:])
+    predetermined = shortshifts.iloc([:,:])
 
     for m in members.index:
         print '1. ', m, members.ix[m,'longshifts']
