@@ -86,7 +86,7 @@ def solve(dat):
                         'w0_fri_shift': roster0.ix[m].ix[weeks0,'d6'],
                         'w0_longshift': roster0.ix[m].ix[weeks0,'longshift'],
                         'r0_co_rests': 0},
-                    ignore_index=True)
+                        ignore_index=True)
     
     carryover = carryover.set_index(['member_id'])
 
@@ -101,27 +101,36 @@ def solve(dat):
 
     # Consolidate predetermined long- and shortshifts
     
-#    predetermined = shortshifts.copy()
-    predetermined = shortshifts.loc[:,:]
+    predetermined = DataFrame(columns=['member_id','week','d1','d2','d3','d4','d5','d6','d7'])
 
     for m in members.index:
-        print '1. ', m, members.ix[m,'longshifts']
-        if members.ix[m,'longshifts'] >= 1:
-            ls = carryover.ix[m,'w0_longshift']
-            print '2. ', m, ls
-            for w in range(1,weeks+1):
-                if ls < members.ix[m,'longshifts']:
-                    ls += 1
-                else:
-                    ls = 1
-                print '3. ', m, ls
-                for d in range(1,7+1):
-                    print '4. ', m, predetermined.ix[m].ix[w,d-1]
-                    if isnull(predetermined.ix[m].ix[w,d-1]):
-                        print '5. ', m, longshifts.ix[m].ix[ls,d-1]
-                        if not isnull(longshifts.ix[m].ix[ls,d-1]):
-                            predetermined.ix[m].ix[w,d-1] = longshifts.ix[m].ix[ls,d-1]
-                            print '6. ', m, predetermined.ix[m].ix[w,d-1]
+        for w in range(1,weeks+1):
+                predetermined = predetermined.append({
+                                    'member_id': m,
+                                    'week': w,
+                                    'd1': shortshifts.ix[m].ix[w,0],
+                                    'd2': shortshifts.ix[m].ix[w,1],
+                                    'd3': shortshifts.ix[m].ix[w,2],
+                                    'd4': shortshifts.ix[m].ix[w,3],
+                                    'd5': shortshifts.ix[m].ix[w,4],
+                                    'd6': shortshifts.ix[m].ix[w,5],
+                                    'd7': shortshifts.ix[m].ix[w,6]},
+                                    ignore_index=True)
+
+    predetermined = predetermined.set_index(['member_id','week'])
+
+#    for m in members.index:        
+#        if members.ix[m,'longshifts'] >= 1:
+#            ls = carryover.ix[m,'w0_longshift']
+#            for w in range(1,weeks+1):
+#                if ls < members.ix[m,'longshifts']:
+#                    ls += 1
+#                else:
+#                    ls = 1
+#                for d in range(1,7+1):
+#                    if isnull(predetermined.ix[m].ix[w,d-1]):
+#                        if not isnull(longshifts.ix[m].ix[ls,d-1]):
+#                            predetermined.ix[m].ix[w,d-1] = longshifts.ix[m].ix[ls,d-1]
 
     # TO BE DELETED
     
