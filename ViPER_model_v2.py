@@ -297,12 +297,11 @@ def solve(dat):
     if rules.ix[110, unit] == 'Yes':
         for m in members.index:
             for w in range(1,weeks+1):
-                for s in shifts.index:
-                    if s not in ("OR","XR"):
-                        if predetermined.ix[m,1+7*(w-1)-1] <> s:
-                            model += x[m][1+7*(w-1)][s] == 0
-                        if predetermined.ix[m,7+7*(w-1)-1] <> s:
-                            model += x[m][7+7*(w-1)][s] == 0
+                for d in (1,7):
+                    for s in shifts.index:
+                        if s not in ("OR","XR"):
+                            if predetermined.ix[m,w,d-1] <> s:
+                                model += x[m][d+7*(w-1)][s] == 0
     
     # [0120] WEEKEND – Weekend morning 700 1 member, 900 1 member; weekend afternoon 1500 2 members; none on all other response and station day shifts.
     if rules.ix[120, unit] == 'Yes':
