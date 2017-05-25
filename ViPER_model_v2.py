@@ -408,16 +408,18 @@ def solve(dat):
     
     # [0230] MEMBER – Hooper one self-nominated afternoon shift per month, i.e. no afternoon shift unless pre-determined.
     if rules.ix[230, unit] == 'Yes':
-        for d in days:
-            for s in ("RP1","RP2","SP1","SP2"):
-                if predetermined.ix["VP34315",d-1] <> s:
-                    model += x["VP34315"][d][s] == 0
+        for w in range(1,weeks+1):
+            for d in range(1,7+1):
+                for s in ("RP1","RP2","SP1","SP2"):
+                    if predetermined.ix["VP34315"].ix[w,d-1] <> s:
+                        model += x["VP34315"][d+7*(w-1)][s] == 0
     
     # [0240] MEMBER – Spencer no 7am shift unless pre-determined.
     if rules.ix[240, unit] == 'Yes':
-        for d in days:
-            if predetermined.ix["VP33968",d-1] <> "RA1":
-                model += x["VP33968"][d]["RA1"] == 0
+        for w in range(1,weeks+1):
+            for d in range(1,7+1):
+                if predetermined.ix["VP33968"].ix[w,d-1] <> "RA1":
+                    model += x["VP33968"][d+7*(w-1)]["RA1"] == 0
     
     # Solve
     print("< < < Model formulated, commencing optimisation > > >")
