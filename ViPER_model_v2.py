@@ -174,13 +174,14 @@ def solve(dat):
     # [0020] PREDETERMINED – Each member for each day is assigned their pre-determined shift if allocated; if not pre-determined then not rostered on pre-determined shifts.
     if rules.ix[20, unit] == 'Yes':
         for m in members.index:
-            for d in days:
-                if not isnull(predetermined.ix[m,d-1]):
-                    model += x[m][d][predetermined.ix[m,d-1]] == 1
-                else:
-                    for s in shifts.index:
-                        if shifts.ix[s,'predetermined'] == 1:
-                            model += x[m][d][s] == 0
+            for w in range(1,weeks+1):
+                for d in range(1,7+1):
+                    if not isnull(predetermined.ix[m].ix[w,d-1]):
+                        model += x[m][d+7*(w-1)][predetermined.ix[m].ix[w,d-1]] == 1
+                    else:
+                        for s in shifts.index:
+                            if shifts.ix[s,'predetermined'] == 1:
+                                model += x[m][d+7*(w-1)][s] == 0
     
     # RULE CONSTRAINTS
     
