@@ -460,4 +460,4 @@ def solve(dat):
                 roster.ix[m,int(d)+3] = s
         print("< < < Roster codifying completed, finished > > >")
 
-    return roster
+    return rules[unit], roster
