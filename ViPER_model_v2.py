@@ -462,10 +462,11 @@ def solve(dat):
                 roster.ix[m,'Member'] = members.ix[m,'lastname'] + ' ' + members.ix[m,'firstname']
                 roster.ix[m,'Rank'] = members.ix[m,'rank']
                 roster.ix[m,int(d)+3] = s
-#            if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
+            if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
 #                d = v.name[v.name.find("_d")+2:]
 #                c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
 #                resp_crew.ix[d].ix['AM','Response'] = c
+                resp_crew.ix[0].ix['AM','Response'] = 2
         print("< < < Roster codifying completed, finished > > >")
 
     return rules[unit], roster, resp_crew
