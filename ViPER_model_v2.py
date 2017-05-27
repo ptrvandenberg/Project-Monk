@@ -433,11 +433,11 @@ def solve(dat):
     if LpStatus[model.status] == 'Infeasible':
         print("< < < Optimisation completed, infeasible > > >")
         roster = {}
-#        resp_crew = {}
+        resp_crew = {}
     elif LpStatus[model.status] == 'Undefined':
         print("< < < Optimisation completed, undefined > > >")
         roster = {}
-#        resp_crew = {}
+        resp_crew = {}
     elif LpStatus[model.status] == 'Optimal':
         print("< < < Optimisation completed, codifying roster > > >")
         roster = DataFrame(columns=['Unit', 'Crew', 'Member_ID', 'Member', 'Rank'])
@@ -465,7 +465,7 @@ def solve(dat):
             if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
                 d = v.name[v.name.find("_d")+2:] + ' am'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
-                resp_crew.ix[d,'Response'] = c
+                resp_crew.ix[d,'Crew'] = c
         print("< < < Roster codifying completed, finished > > >")
 
     return rules[unit], roster, resp_crew
