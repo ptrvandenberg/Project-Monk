@@ -22,12 +22,12 @@ def validate_input(dat):
     
 def solve(dat):
 
-    print("< < < Initiated, validating inputs > > >")
+    print "< < < Initiated, validating inputs > > >"
 
     invalid_input = validate_input(dat)
     assert not invalid_input, invalid_input
 
-    print("< < < Inputs validated, formulating model > > >")
+    print "< < < Inputs validated, formulating model > > >"
 
     # Parse input data
 
@@ -144,12 +144,12 @@ def solve(dat):
     x = LpVariable.dicts("x_m%s_d%s_s%s", (members.index, days, shifts.index), 0, 1, LpBinary)
     
     # Create and define the additional variables
-    r2_co_rests = LpVariable.dicts("r2_rests_%s", members.index, 0, 2, LpInteger)
-    RN_bin1 = LpVariable.dicts("NG_bin1_%s", members.index, 0, 1, LpBinary)
-    RN_bin4 = LpVariable.dicts("NG_bin4_%s", members.index, 0, 1, LpBinary)
-    RN_bin5 = LpVariable.dicts("NG_bin5_%s", members.index, 0, 1, LpBinary)
-    RN_bin8 = LpVariable.dicts("NG_bin8_%s", members.index, 0, 1, LpBinary)
-    eor = LpVariable.dicts("eor_%s_%s", (members.index, days), 0, 1, LpBinary)
+    r2_co_rests = LpVariable.dicts("r2_rests_m%s", members.index, 0, 2, LpInteger)
+    RN_bin1 = LpVariable.dicts("NG_bin1_m%s", members.index, 0, 1, LpBinary)
+    RN_bin4 = LpVariable.dicts("NG_bin4_m%s", members.index, 0, 1, LpBinary)
+    RN_bin5 = LpVariable.dicts("NG_bin5_m%s", members.index, 0, 1, LpBinary)
+    RN_bin8 = LpVariable.dicts("NG_bin8_m%s", members.index, 0, 1, LpBinary)
+    eor = LpVariable.dicts("eor_m%s_d%s", (members.index, days), 0, 1, LpBinary)
     crew_am_bin1 = LpVariable.dicts("crew_am_bin1_d%s", days, 0, 1, LpBinary)
     crew_am_bin2 = LpVariable.dicts("crew_am_bin2_d%s", days, 0, 1, LpBinary)
     crew_am_bin3 = LpVariable.dicts("crew_am_bin3_d%s", days, 0, 1, LpBinary)
@@ -373,18 +373,22 @@ def solve(dat):
     
     # [0210] CREW – On weekdays, both morning and afternoon response shifts each have to be from the same crew.
     if rules.ix[210, unit] == 'Yes':
+        print "Apply rule 210"
         for w in range(1,weeks+1):
             for d in range(2,6+1):
                 model += crew_am_bin1[d+7*(w-1)] + crew_am_bin2[d+7*(w-1)] + crew_am_bin3[d+7*(w-1)] == 1
                 model += crew_pm_bin1[d+7*(w-1)] + crew_pm_bin2[d+7*(w-1)] + crew_pm_bin3[d+7*(w-1)] == 1
                 for m in members.index:
                     if members.ix[m,'crew'] == 1:
+                        print m, members.ix[m,'crew'], 1
                         model += x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] <= crew_am_bin1[d+7*(w-1)]
                         model += x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] <= crew_pm_bin1[d+7*(w-1)]
                     if members.ix[m,'crew'] == 2:
+                        print m, members.ix[m,'crew'], 2
                         model += x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] <= crew_am_bin2[d+7*(w-1)]
                         model += x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] <= crew_pm_bin2[d+7*(w-1)]
                     if members.ix[m,'crew'] == 3:
+                        print m, members.ix[m,'crew'], 3
                         model += x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] <= crew_am_bin3[d+7*(w-1)]
                         model += x[m][d+7*(w-1)]["RP1"] + x[m][d+7*(w-1)]["RP2"] <= crew_pm_bin3[d+7*(w-1)]
     
@@ -422,7 +426,7 @@ def solve(dat):
                     model += x["VP33968"][d+7*(w-1)]["RA1"] == 0
     
     # Solve
-    print("< < < Model formulated, commencing optimisation > > >")
+    print "< < < Model formulated, commencing optimisation > > >"
     model.solve()
     
     print("Status:", LpStatus[model.status])
@@ -431,15 +435,15 @@ def solve(dat):
     model.writeLP("c:\git\Project_Monk.lp")
     
     if LpStatus[model.status] == 'Infeasible':
-        print("< < < Optimisation completed, infeasible > > >")
+        print "< < < Optimisation completed, infeasible > > >"
         roster = {}
         resp_crew = {}
     elif LpStatus[model.status] == 'Undefined':
-        print("< < < Optimisation completed, undefined > > >")
+        print "< < < Optimisation completed, undefined > > >"
         roster = {}
         resp_crew = {}
     elif LpStatus[model.status] == 'Optimal':
-        print("< < < Optimisation completed, codifying roster > > >")
+        print "< < < Optimisation completed, codifying roster > > >"
         roster = DataFrame(columns=['Unit', 'Crew', 'Member_ID', 'Member', 'Rank'])
         for w in range(1,weeks+1):
             roster['Sun '+str(startdate + timedelta(days=0+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=0+7*(w-1)))[5:-12]] = ''
@@ -466,6 +470,6 @@ def solve(dat):
                 d = v.name[v.name.find("_d")+2:] + ' am'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
                 resp_crew.ix[d,'Crew'] = c
-        print("< < < Roster codifying completed, finished > > >")
+        print "< < < Roster codifying completed, finished > > >"
 
     return rules[unit], roster, resp_crew
