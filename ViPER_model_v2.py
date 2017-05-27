@@ -373,12 +373,12 @@ def solve(dat):
     
     # [0210] CREW – On weekdays, both morning and afternoon response shifts each have to be from the same crew.
     if rules.ix[210, unit] == 'Yes':
-        print "Apply rule 210"
         for w in range(1,weeks+1):
             for d in range(2,6+1):
                 model += crew_am_bin1[d+7*(w-1)] + crew_am_bin2[d+7*(w-1)] + crew_am_bin3[d+7*(w-1)] == 1
                 model += crew_pm_bin1[d+7*(w-1)] + crew_pm_bin2[d+7*(w-1)] + crew_pm_bin3[d+7*(w-1)] == 1
                 for m in members.index:
+                    print m, members.ix[m,'crew']
                     if members.ix[m,'crew'] == 1:
                         print m, members.ix[m,'crew'], 1
                         model += x[m][d+7*(w-1)]["RA1"] + x[m][d+7*(w-1)]["RA2"] + x[m][d+7*(w-1)]["RA3"] <= crew_am_bin1[d+7*(w-1)]
