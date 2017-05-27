@@ -450,8 +450,8 @@ def solve(dat):
             roster['Fri '+str(startdate + timedelta(days=5+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=5+7*(w-1)))[5:-12]] = ''
             roster['Sat '+str(startdate + timedelta(days=6+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=6+7*(w-1)))[5:-12]] = ''
         roster = roster.set_index(['Member_ID'])
-#        resp_crew = DataFrame(columns=['Day','AM/PM', 'Crew'])
-#        resp_crew = resp_crew.set_index(['Day','AM/PM'])
+        resp_crew = DataFrame(columns=['Day','AM/PM', 'Crew'])
+        resp_crew = resp_crew.set_index(['Day','AM/PM'])
         for v in model.variables():
             if v.name[0:2] == "x_" and v.varValue == 1:
                 m = v.name[v.name.find("_m")+2:v.name.find("_d")]
@@ -468,4 +468,4 @@ def solve(dat):
 #                resp_crew.ix[d].ix['AM','Response'] = c
         print("< < < Roster codifying completed, finished > > >")
 
-    return rules[unit], roster, crew_am_bin1, crew_am_bin2, crew_am_bin3, crew_pm_bin1, crew_pm_bin2, crew_pm_bin3
+    return rules[unit], roster, resp_crew
