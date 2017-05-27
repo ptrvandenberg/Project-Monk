@@ -466,6 +466,10 @@ def solve(dat):
                 d = v.name[v.name.find("_d")+2:] + ' am'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
                 resp_crew.ix[d,'Crew'] = c
+            if v.name[0:11] == "crew_pm_bin" and v.varValue == 1:
+                d = v.name[v.name.find("_d")+2:] + ' pm'
+                c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
+                resp_crew.ix[d,'Crew'] = c
         print "< < < Roster codifying completed, finished > > >"
 
     return rules[unit], roster, resp_crew
