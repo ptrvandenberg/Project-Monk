@@ -93,7 +93,7 @@ def solve(dat):
     for m in members.index:
         for w in range(1,weeks0+1):
             carryover.ix[m,'r0_co_rests'] += (roster0.ix[m].ix[w,'d1']=='XR')+(roster0.ix[m].ix[w,'d2']=='XR')+(roster0.ix[m].ix[w,'d3']=='XR')+(roster0.ix[m].ix[w,'d4']=='XR')+(roster0.ix[m].ix[w,'d5']=='XR')+(roster0.ix[m].ix[w,'d6']=='XR')+(roster0.ix[m].ix[w,'d7']=='XR')
-        carryover.ix[m,'r0_co_rests'] = max(2 * weeks0 - (carryover.ix[m,'r0_co_rests']),0)
+        carryover.ix[m,'r0_co_rests'] = roster0.ix[m].ix[1,'carryin_rest'] + 2 * weeks0 - carryover.ix[m,'r0_co_rests']
             
     # TO BE DELETED
     print 'carryover'
