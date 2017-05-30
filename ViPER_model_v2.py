@@ -440,16 +440,16 @@ def solve(dat):
         resp_crew = {}
     elif LpStatus[model.status] == 'Optimal':
         print "< < < Optimisation completed, codifying roster > > >"
-        roster = DataFrame(columns=['Unit', 'Crew', 'Member_ID', 'Member', 'Rank'])
-        for w in range(1,weeks+1):
-            roster['Sun '+str(startdate + timedelta(days=0+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=0+7*(w-1)))[5:-12]] = ''
-            roster['Mon '+str(startdate + timedelta(days=1+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=1+7*(w-1)))[5:-12]] = ''
-            roster['Tue '+str(startdate + timedelta(days=2+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=2+7*(w-1)))[5:-12]] = ''
-            roster['Wed '+str(startdate + timedelta(days=3+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=3+7*(w-1)))[5:-12]] = ''
-            roster['Thu '+str(startdate + timedelta(days=4+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=4+7*(w-1)))[5:-12]] = ''
-            roster['Fri '+str(startdate + timedelta(days=5+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=5+7*(w-1)))[5:-12]] = ''
-            roster['Sat '+str(startdate + timedelta(days=6+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=6+7*(w-1)))[5:-12]] = ''
-        roster = roster.set_index(['Member_ID'])
+        roster = DataFrame(columns=['member_id', 'unit_id' 'period_id', 'week', 'carryin_rest', 'longshift', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'])
+#        for w in range(1,weeks+1):
+#            roster['Sun '+str(startdate + timedelta(days=0+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=0+7*(w-1)))[5:-12]] = ''
+#            roster['Mon '+str(startdate + timedelta(days=1+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=1+7*(w-1)))[5:-12]] = ''
+#            roster['Tue '+str(startdate + timedelta(days=2+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=2+7*(w-1)))[5:-12]] = ''
+#            roster['Wed '+str(startdate + timedelta(days=3+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=3+7*(w-1)))[5:-12]] = ''
+#            roster['Thu '+str(startdate + timedelta(days=4+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=4+7*(w-1)))[5:-12]] = ''
+#            roster['Fri '+str(startdate + timedelta(days=5+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=5+7*(w-1)))[5:-12]] = ''
+#            roster['Sat '+str(startdate + timedelta(days=6+7*(w-1)))[8:-9]+'/'+str(startdate + timedelta(days=6+7*(w-1)))[5:-12]] = ''
+#        roster = roster.set_index(['Member_ID'])
         resp_crew = DataFrame(columns=['Day', 'Crew'])
         resp_crew = resp_crew.set_index(['Day'])
         for v in model.variables():
@@ -457,11 +457,11 @@ def solve(dat):
                 m = v.name[v.name.find("_m")+2:v.name.find("_d")]
                 d = v.name[v.name.find("_d")+2:v.name.find("_s")]
                 s = v.name[v.name.find("_s")+2:]
-                roster.ix[m,'Unit'] = unit
-                roster.ix[m,'Crew'] = members.ix[m,'crew']
-                roster.ix[m,'Member'] = members.ix[m,'lastname'] + ' ' + members.ix[m,'firstname']
-                roster.ix[m,'Rank'] = members.ix[m,'rank']
-                roster.ix[m,int(d)+3] = s
+#                roster.ix[m,'Unit'] = unit
+#                roster.ix[m,'Crew'] = members.ix[m,'crew']
+#                roster.ix[m,'Member'] = members.ix[m,'lastname'] + ' ' + members.ix[m,'firstname']
+#                roster.ix[m,'Rank'] = members.ix[m,'rank']
+#                roster.ix[m,int(d)+3] = s
             if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
                 d = v.name[v.name.find("_d")+2:] + ' am'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
