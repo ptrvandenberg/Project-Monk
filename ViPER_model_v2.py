@@ -440,8 +440,8 @@ def solve(dat):
         resp_crew = {}
     elif LpStatus[model.status] == 'Optimal':
         print "< < < Optimisation completed, codifying roster > > >"
-        roster = DataFrame(columns=['member_id', 'unit_id' 'period_id', 'week', 'carryin_rest', 'longshift', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'])
-        roster = roster.set_index(['member_id'])
+        roster = DataFrame(columns=['member_id', 'unit_id', 'period_id', 'week', 'carryin_rest', 'longshift', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'])
+        roster = roster.set_index(['member_id', 'unit_id', 'period_id', 'week'])
         resp_crew = DataFrame(columns=['Day', 'Crew'])
         resp_crew = resp_crew.set_index(['Day'])
         for v in model.variables():
@@ -449,13 +449,13 @@ def solve(dat):
                 m = v.name[v.name.find("_m")+2:v.name.find("_d")]
                 d = v.name[v.name.find("_d")+2:v.name.find("_s")]
                 s = v.name[v.name.find("_s")+2:]
-                roster.ix[m,'unit_id'] = unit
-                roster.ix[m,'period_id'] = period
-                roster.ix[m,'week'] = 1 + int(int(d)/7)
-                roster.ix[m,'carryin_rest'] = carryover.ix[m,'r0_co_rests']
-                if 1 + int(int(d)/7) == weeks:
-                    roster.ix[m,'longshift'] = ls
-                roster.ix[m,'d'+d] = s
+#                roster.ix[m,'unit_id'] = unit
+#                roster.ix[m,'period_id'] = period
+#                roster.ix[m,'week'] = 1 + int(int(d)/7)
+                roster.ix[m].ix[unit].ix[period].ix[1 + int(int(d)/7),'carryin_rest'] = carryover.ix[m,'r0_co_rests']
+#                if 1 + int(int(d)/7) == weeks:
+#                    roster.ix[m,'longshift'] = ls
+#                roster.ix[m,'d'+str(int(d)-)] = s
             if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
                 d = v.name[v.name.find("_d")+2:] + ' am'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
