@@ -455,7 +455,7 @@ def solve(dat):
                 roster.ix[m,'carryin_rest'] = carryover.ix[m,'r0_co_rests']
                 if 1 + int(int(d)/7) == weeks:
                     roster.ix[m,'longshift'] = ls
-                roster.ix[m,int(d)+4] = s
+                roster.ix[m,'d'+d] = s
             if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
                 d = v.name[v.name.find("_d")+2:] + ' am'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
