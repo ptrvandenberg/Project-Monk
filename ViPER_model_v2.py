@@ -452,9 +452,10 @@ def solve(dat):
 #                roster.ix[m].ix[1 + int(int(d)/7),'unit_id'] = unit
 #                roster.ix[m,'period_id'] = period
 #                roster.ix[m,'week'] = 1 + int(int(d)/7)
-                roster.ix[(m, unit, period, 1 + int((int(d)-1)/7)), 'carryin_rest'] = carryover.ix[m,'r0_co_rests']
-#                if 1 + int(int(d)/7) == weeks:
-#                    roster.ix[m,'longshift'] = ls
+                if 1 + int((int(d)-1)/7) == 1:
+                    roster.ix[(m, unit, period, 1 + int((int(d)-1)/7)), 'carryin_rest'] = carryover.ix[m,'r0_co_rests']
+                if 1 + int((int(d)-1)/7) == weeks:
+                    roster.ix[(m, unit, period, 1 + int((int(d)-1)/7)), 'longshift'] = ls
 #                roster.ix[m,'d'+str(int(d)-)] = s
             if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
                 d = v.name[v.name.find("_d")+2:] + ' am'
@@ -464,6 +465,7 @@ def solve(dat):
                 d = v.name[v.name.find("_d")+2:] + ' pm'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
                 resp_crew.ix[d,'Crew'] = c
+        roster = roster.sort_index
         print "< < < Roster codifying completed, finished > > >"
 
     return rules[unit], roster, resp_crew
