@@ -451,7 +451,7 @@ def solve(dat):
                 s = v.name[v.name.find("_s")+2:]
                 roster.ix[m,'unit_id'] = unit
                 roster.ix[m,'period_id'] = period
-                roster.ix[m,'week'] = 1 + int(d/7)
+                roster.ix[m,'week'] = 1 + int(int(d)/7)
                 roster.ix[m,'carryin_rest'] = carryover.ix[m,'r0_co_rests']
                 if 1 + int(d/7) == weeks:
                     roster.ix[m,'longshift'] = ls
