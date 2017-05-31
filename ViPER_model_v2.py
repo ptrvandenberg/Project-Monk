@@ -452,7 +452,7 @@ def solve(dat):
 #                roster.ix[m].ix[1 + int(int(d)/7),'unit_id'] = unit
 #                roster.ix[m,'period_id'] = period
 #                roster.ix[m,'week'] = 1 + int(int(d)/7)
-                roster.ix[(m, unit, period, 1 + int(int(d)/7)), 'carryin_rest'] = carryover.ix[m,'r0_co_rests']
+                roster.ix[(m, unit, period, 1 + int((int(d)-1)/7)), 'carryin_rest'] = carryover.ix[m,'r0_co_rests']
 #                if 1 + int(int(d)/7) == weeks:
 #                    roster.ix[m,'longshift'] = ls
 #                roster.ix[m,'d'+str(int(d)-)] = s
