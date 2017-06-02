@@ -475,7 +475,7 @@ def solve(dat):
                 d = v.name[v.name.find("_d")+2:] + ' pm'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
                 resp_crew.ix[d,'Crew'] = c
-        roster.reset_index()
+        roster.reset_index(inplace=True)
         print "< < < Roster codifying completed, finished > > >"
 
     return rules[unit], roster, resp_crew
