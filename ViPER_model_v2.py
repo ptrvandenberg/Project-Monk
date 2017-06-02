@@ -466,8 +466,7 @@ def solve(dat):
                 s = v.name[v.name.find("_s")+2:]
                 w = 1 + int(int(d)/7)
                 d = int(d) - 7 * w
-# roster['carryin_rest'].loc[m, unit, period, w] = carryover.ix[m,'r0_co_rests']
-#                roster.ix[m,'d'+str(d)] = s
+                roster['d'+str(d)].loc[m, unit, period, w] = s
             if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
                 d = v.name[v.name.find("_d")+2:] + ' am'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
@@ -476,7 +475,6 @@ def solve(dat):
                 d = v.name[v.name.find("_d")+2:] + ' pm'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
                 resp_crew.ix[d,'Crew'] = c
-#        roster.sort_index(inplace=True)
         print "< < < Roster codifying completed, finished > > >"
 
     return rules[unit], roster, resp_crew
