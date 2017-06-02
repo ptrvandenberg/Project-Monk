@@ -446,7 +446,10 @@ def solve(dat):
         resp_crew = resp_crew.set_index(['Day'])
         for m in members.index:
             for w in range(1,weeks+1):
-                roster.loc[len(roster)] = [m, unit, period, w, nan, nan, nan, nan, nan, nan, nan, nan, nan]
+                if w == 1:
+                    roster.loc[len(roster)] = [m, unit, period, w, carryover.ix[m,'r0_co_rests'], nan, nan, nan, nan, nan, nan, nan, nan]
+                else:
+                    roster.loc[len(roster)] = [m, unit, period, w, nan, nan, nan, nan, nan, nan, nan, nan, nan]
         roster = roster.set_index(['member_id', 'unit_id', 'period_id', 'week'])
         for v in model.variables():
             if v.name[0:2] == "x_" and v.varValue == 1:
@@ -455,8 +458,8 @@ def solve(dat):
                 s = v.name[v.name.find("_s")+2:]
                 w = 1 + int(int(d)/7)
                 d = int(d) - 7 * w
-                if w == 1:
-                    roster['carryin_rest'].loc[m, unit, period, w] = carryover.ix[m,'r0_co_rests']
+#                if w == 1:
+#                    roster['carryin_rest'].loc[m, unit, period, w] = carryover.ix[m,'r0_co_rests']
 #                if w == weeks:
 #                    if members.ix[m,'longshifts'] >= 1:
 #                        if (carryover.ix[m,'w0_longshift'] + weeks) % members.ix[m,'longshifts'] == 0:
