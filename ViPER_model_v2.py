@@ -444,7 +444,7 @@ def solve(dat):
         roster = roster.set_index(['member_id'])
         resp_crew = DataFrame(columns=['Day', 'Crew'])
         resp_crew = resp_crew.set_index(['Day'])
-        for v in model.variables():
+        for v in model.variables():                                 # Rewrite to pre-fill roster and only assign s based on variables
             if v.name[0:2] == "x_" and v.varValue == 1:
                 m = v.name[v.name.find("_m")+2:v.name.find("_d")]
                 d = v.name[v.name.find("_d")+2:v.name.find("_s")]
@@ -456,8 +456,12 @@ def solve(dat):
                 roster.ix[m,'week'] = w
                 if w == 1:
                     roster.ix[m, 'carryin_rest'] = carryover.ix[m,'r0_co_rests']
-#                if w == weeks:
-#                    roster.ix[m, 'longshift'] = ls
+                if w == weeks:
+                    if members.ix[m,'longshifts'] >= 1:
+                        if (carryover.ix[m,'w0_longshift'] + weeks) % members.ix[m,'longshifts'] == 0:
+                            roster.ix[m, 'longshift'] = members.ix[m,'longshifts']
+                        else:
+                            roster.ix[m, 'longshift'] = (carryover.ix[m,'w0_longshift'] + weeks) % members.ix[m,'longshifts']
                 roster.ix[m,'d'+str(d)] = s
             if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
                 d = v.name[v.name.find("_d")+2:] + ' am'
