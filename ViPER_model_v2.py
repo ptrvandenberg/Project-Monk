@@ -464,7 +464,7 @@ def solve(dat):
                 m = v.name[v.name.find("_m")+2:v.name.find("_d")]
                 d = v.name[v.name.find("_d")+2:v.name.find("_s")]
                 s = v.name[v.name.find("_s")+2:]
-                w = 1 + int(int(d)/7)
+                w = 1 + int((int(d)-1)/7)
                 d = int(d) - 7 * (w - 1)
                 roster['d'+str(d)].loc[m, unit, period, w] = s
             if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
