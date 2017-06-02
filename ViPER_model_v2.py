@@ -446,7 +446,7 @@ def solve(dat):
         resp_crew = resp_crew.set_index(['Day'])
         for m in members.index:
             for w in range(1,weeks+1):
-                roster.loc[len(roster)] = [m, unit, period, w]
+                roster.loc[len(roster)] = [m, unit, period, w, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan]
 #                roster.ix[m,'week'] = w
 
         for v in model.variables():                                 # Rewrite to pre-fill roster and only assign s based on variables
