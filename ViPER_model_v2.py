@@ -441,13 +441,12 @@ def solve(dat):
     elif LpStatus[model.status] == 'Optimal':
         print "< < < Optimisation completed, codifying roster > > >"
         roster = DataFrame(columns=['member_id', 'unit_id', 'period_id', 'week', 'carryin_rest', 'longshift', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'])
-        roster = roster.set_index(['member_id', 'week'])
+#        roster = roster.set_index(['member_id', 'week'])
         resp_crew = DataFrame(columns=['Day', 'Crew'])
         resp_crew = resp_crew.set_index(['Day'])
         for m in members.index:
             for w in range(1,weeks+1):
-                roster.ix[m].ix[w,'unit_id'] = unit
-                roster.ix[m].ix[w,'period_id'] = period
+                roster.loc[(m,w),['unit_id', 'period_id']] = ([unit, period])
 #                roster.ix[m,'week'] = w
 
         for v in model.variables():                                 # Rewrite to pre-fill roster and only assign s based on variables
