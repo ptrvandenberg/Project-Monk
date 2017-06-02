@@ -6,6 +6,7 @@
 
 # Import dependencies
 from pandas import DataFrame, ExcelFile, isnull
+from numpy import nan
 from pulp import LpVariable, lpSum, LpProblem, LpMaximize, LpContinuous, LpInteger, LpBinary, LpStatus, value
 from datetime import timedelta
 
@@ -446,7 +447,7 @@ def solve(dat):
         resp_crew = resp_crew.set_index(['Day'])
         for m in members.index:
             for w in range(1,weeks+1):
-                roster.loc[len(roster)] = [m, unit, period, w, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan]
+                roster.loc[len(roster)] = [m, unit, period, w, nan, nan, nan, nan, nan, nan, nan, nan, nan]
 #                roster.ix[m,'week'] = w
 
         for v in model.variables():                                 # Rewrite to pre-fill roster and only assign s based on variables
