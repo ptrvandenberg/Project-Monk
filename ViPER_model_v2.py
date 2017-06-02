@@ -441,28 +441,31 @@ def solve(dat):
     elif LpStatus[model.status] == 'Optimal':
         print "< < < Optimisation completed, codifying roster > > >"
         roster = DataFrame(columns=['member_id', 'unit_id', 'period_id', 'week', 'carryin_rest', 'longshift', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'])
-        roster = roster.set_index(['member_id'])
+        roster = roster.set_index(['member_id', 'week'])
         resp_crew = DataFrame(columns=['Day', 'Crew'])
         resp_crew = resp_crew.set_index(['Day'])
+        for m in members.index:
+            for w in range(1,weeks+1):
+                roster.ix[m].ix[w,'unit_id'] = unit
+                roster.ix[m].ix[w,'period_id'] = period
+#                roster.ix[m,'week'] = w
+
         for v in model.variables():                                 # Rewrite to pre-fill roster and only assign s based on variables
-            if v.name[0:2] == "x_" and v.varValue == 1:
-                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
-                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
-                s = v.name[v.name.find("_s")+2:]
-                w = 1 + int(int(d)/7)
-                d = int(d) - 7 * w
-                roster.ix[m,'unit_id'] = unit
-                roster.ix[m,'period_id'] = period
-                roster.ix[m,'week'] = w
-                if w == 1:
-                    roster.ix[m, 'carryin_rest'] = carryover.ix[m,'r0_co_rests']
-                if w == weeks:
-                    if members.ix[m,'longshifts'] >= 1:
-                        if (carryover.ix[m,'w0_longshift'] + weeks) % members.ix[m,'longshifts'] == 0:
-                            roster.ix[m, 'longshift'] = members.ix[m,'longshifts']
-                        else:
-                            roster.ix[m, 'longshift'] = (carryover.ix[m,'w0_longshift'] + weeks) % members.ix[m,'longshifts']
-                roster.ix[m,'d'+str(d)] = s
+#            if v.name[0:2] == "x_" and v.varValue == 1:
+#                m = v.name[v.name.find("_m")+2:v.name.find("_d")]
+#                d = v.name[v.name.find("_d")+2:v.name.find("_s")]
+#                s = v.name[v.name.find("_s")+2:]
+#                w = 1 + int(int(d)/7)
+#                d = int(d) - 7 * w
+#                if w == 1:
+#                    roster.ix[m, 'carryin_rest'] = carryover.ix[m,'r0_co_rests']
+#                if w == weeks:
+#                    if members.ix[m,'longshifts'] >= 1:
+#                        if (carryover.ix[m,'w0_longshift'] + weeks) % members.ix[m,'longshifts'] == 0:
+#                            roster.ix[m, 'longshift'] = members.ix[m,'longshifts']
+#                        else:
+#                            roster.ix[m, 'longshift'] = (carryover.ix[m,'w0_longshift'] + weeks) % members.ix[m,'longshifts']
+#                roster.ix[m,'d'+str(d)] = s
             if v.name[0:11] == "crew_am_bin" and v.varValue == 1:
                 d = v.name[v.name.find("_d")+2:] + ' am'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
@@ -471,7 +474,7 @@ def solve(dat):
                 d = v.name[v.name.find("_d")+2:] + ' pm'
                 c = v.name[v.name.find("_bin")+4:v.name.find("_d")]
                 resp_crew.ix[d,'Crew'] = c
-        roster.sort_index(inplace=True)
+#        roster.sort_index(inplace=True)
         print "< < < Roster codifying completed, finished > > >"
 
     return rules[unit], roster, resp_crew
