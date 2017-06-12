@@ -7,9 +7,10 @@
 def cleanroster(rosterdat):
 
     print rosterdat
+    
     for i in rosterdat.index:
-        print i
-        if rosterdat.ix[i,'d1'] == 'R/D':
-            rosterdat.ix[i,'d1'] = 'XR'
+        for d in range(1,7+1):
+            if rosterdat.ix[i,d] == 'R/D':
+                rosterdat.ix[i,d] = 'XR'
 
     return rosterdat
