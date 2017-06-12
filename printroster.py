@@ -8,6 +8,7 @@ def cleanroster(rosterdat):
 
     print rosterdat
     for i in rosterdat:
+        print i
         if rosterdat.ix[i,'d1'] == 'R/D':
             rosterdat.ix[i,'d1'] = 'XR'
 
