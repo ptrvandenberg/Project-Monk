@@ -6,6 +6,9 @@
 
 def cleanroster(rosterdat):
 
-  print rosterdat
+    print rosterdat
+    for i in rosterdat:
+        if rosterdat['d1] == 'R/D':
+            rosterdat['d1'] = 'XR'
 
-  return rosterdat
+    return rosterdat
