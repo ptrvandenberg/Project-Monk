@@ -9,7 +9,7 @@ def cleanroster(rosterdat):
     print rosterdat
     
     for i in rosterdat.index:
-        for d in range(1,7+1):
+        for d in range(1,7*2+1):    # 2 weeks only at this time
             if rosterdat.ix[i,d] == 'R/D':
                 rosterdat.ix[i,d] = 'XR'
 
